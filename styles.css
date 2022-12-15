@@ -12,11 +12,13 @@ input[type='text']{
     border-radius: 8px;
     width:  40%;
     max-width: 350px;
+    min-width: 250px;
     border: 0.8px solid purple;
 }
+
 button{
     padding: 6px;
-    background-color: dodgerblue;
+    background-color: lightcoral;
     border-radius: 10px;
     margin: 20px 5px;
     font-size: 17.5px;
@@ -34,7 +36,8 @@ button:hover{
     display: none;
 }
 #map{
-    height: 500px;
-    margin: 5px;
+    height: 450px;
     padding: 0px;
+    border-radius: 20px;
+    border: 2px solid black;
 }
