@@ -1,3 +1,35 @@
+
 body{
+    margin: 1rem 3rem;
+    height: 100vh;
     background: linear-gradient(orange, red) no-repeat;
+}
+
+input[type='text']{
+    padding: 8px;
+    color: black;
+    box-shadow: 2px 2px 6px black;  
+    border-radius: 8px;
+    width:  40%;
+    max-width: 350px;
+    border: 0.8px solid purple;
+}
+button{
+    padding: 6px;
+    background-color: dodgerblue;
+    border-radius: 10px;
+    margin: 20px 5px;
+    font-size: 17.5px;
+    font-weight: bold;
+    text-shadow: 1px 1px black;
+    border: 1px solid black;
+    width: 150px;
+    color: white;
+}
+button:hover{
+    box-shadow: 2px 2px 10px black;
+    cursor: pointer;
+}
+.city-info-view{
+    display: none;
 }
