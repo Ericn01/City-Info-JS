@@ -33,3 +33,8 @@ button:hover{
 .city-info-view{
     display: none;
 }
+#map{
+    height: 500px;
+    margin: 5px;
+    padding: 0px;
+}
