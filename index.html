@@ -12,12 +12,24 @@
     <!-- Input (text) -> {name of city}, {country} -> *SUBMIT* -> {fetch from JSON (City name, country, population, picture of city, lat/long)
     } -> retrieve LAT/LONG info -> fetch from weather API -> retrieve weather data. Display it! -->
     <h1> City Data Retriever </h1>
-    <section class="city-input">
+    <section class="city-input-view">
         <input type="text" id="city-input" placeholder="Enter City Name!">
         <button id="city-submit-btn"> Submit! </button>
     </section>
     <section class="city-info-view">
-        
+        <section class="weather-info"> 
+            <div class="current-temperature"> </div>
+        </section>
+        <section class="city-specific-info"> 
+            <h2 class="city-data name"> </h2>
+            <h3 class="city-data country"></h3>
+            <h3 class="city-data population"></h3>
+            <div class="city-data "></div>
+            <div class="city-data"></div>
+        </section>
+        <section class="city-map">
+            <h1> The City Map Will Go Here </h1>
+        </section>
     </section>
 </body>
 </html>
