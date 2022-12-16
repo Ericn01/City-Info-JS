@@ -10,8 +10,7 @@ async function fetchEndpointData(endpoint){
 }
 document.addEventListener("DOMContentLoaded", async () => {
     // Query Selectors for some of the data elements 
-    const cityNameContainer = document.querySelector(".name");
-    const cityCountryContainer = document.querySelector(".country");
+    const cityNameCountryContainer = document.querySelector(".name-country");
     const cityPopulationContainer = document.querySelector(".population");
     // Retrieves the data to be presented for every city
     let cityData = JSON.parse(localStorage.getItem('cityData')) || "";
@@ -59,7 +58,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         cityNotFound.textContent = `The city '${cityName}' could not be found. Please check your spelling, and try again.`
         cityInput.textContent = "";
         loadCityInputPlaceholder(); // Load a new city placeholder
-    }
+    }    
     async function cityInfoDisplay(inputCity){
         changeView("city-info"); // Switches the page view to display city information
         // Lat and long retrieved from the city obj
@@ -67,14 +66,17 @@ document.addEventListener("DOMContentLoaded", async () => {
         const cityLongitude = inputCity.lng;
         // Displays a map of the given location, based on the lat and long values given
         const map = initializeMap(cityLatitude, cityLongitude, inputCity.population);
-        const weatherData = retrieveCityWeatherData(cityLatitude, cityLongitude);
+        // Receive and return the weather data for the given city
+        const weatherData = await retrieveCityWeatherData(cityLatitude, cityLongitude).then(res => res);
+        makeRelevantWeatherDataMarkup(weatherData);
         // grab the time at the given location 
         const timeAtLocation = calculateTimeAtLocation(weatherData.timezone);
         document.querySelector(".current-time").textContent = `Current time + ${timeAtLocation}`;
-        console.log(weatherData);
         // Displays the city basic information 
         displayMainCityInfo(inputCity.city, inputCity.country, inputCity.population);
     }
+    
+
     function getCityImage(map, cityName){
         const imageRequest = {
             location: map.getCenter(),
@@ -88,8 +90,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     }
     function displayMainCityInfo(name, country, population){
-        cityNameContainer.textContent = name;
-        cityCountryContainer.textContent = country;
+        cityNameCountryContainer.textContent = name + ", " + country;
         cityPopulationContainer.textContent = "Population of " + formatPopulationValue(population);
     }
     /* Determines how zoomed in the city map should be based on the population. Very accurate for most NA cities, less so for EU cities (heavy density) */
@@ -144,22 +145,29 @@ document.addEventListener("DOMContentLoaded", async () => {
     function retrieveCityWeatherData(cLat, cLong){
         let weatherData = "";
         try{
-            weatherData = fetchEndpointData(`https://api.openweathermap.org/data/3.0/onecall?lat=${cLat}&lon=${cLong}&appid=3c7bc9f835d589478c313a48f04509d2`).then(weatherData => weatherData);
+            weatherData = fetchEndpointData(`https://api.openweathermap.org/data/3.0/onecall?lat=${cLat}&lon=${cLong}&exclude=alerts,minutely&appid=3c7bc9f835d589478c313a48f04509d2`).then(weatherData => weatherData);
         }
         catch(e){
             console.log("An error occured while fetching your weather data!" + e);
         }
         return weatherData;
     }
-    function retrieveRelevantWeatherData(weatherObj){
-        const weatherDescription = weatherObj.weather.description;
-        const tempCelcius = convertKelvinToUnit('celcius', weatherObj.weather.temp);
-        const tempFahrenheit = convertKelvinToUnit('fahrenheit', weatherObj.weather.temp);
+    /* Generates the markup for the weather data we want to display */
+    function makeRelevantWeatherDataMarkup(weatherObj){
+        console.log(weatherObj);
+        document.querySelectorAll(".weather-info div").forEach( (info) => info.textContent = ""); // Clears the text content of each node.
+        document.querySelector(".sunrise-time").textContent = "Sun rises at " + new Date(weatherObj.current.sunrise * 1000);
+        document.querySelector(".sunset-time").textContent = "Sun sets at " + new Date(weatherObj.current.sunset * 1000);
+        document.querySelector(".humidity").textContent = "Humidity: " +weatherObj.current.humidity + "%";
+        document.querySelector(".weather-description").textContent = "City has a forecast of " + weatherObj.current.weather[0].description;
+        document.querySelector(".current-temperature").textContent += `Current temperature: ${convertKelvinToUnit('celcius', weatherObj.current.temp)}°C / ${convertKelvinToUnit('fahrenheit', weatherObj.current.temp)}°F`;
     }
     function calculateTimeAtLocation(locationTimezone){
+        console.log(locationTimezone)
         const timeInArea = new Date().toLocaleDateString("en-us", {timezone: locationTimezone});
+        console.log(timeInArea);
         return timeInArea.split(",")[1]; // Returns the current time 
-    }
+    } 
     function initializeMap(lat, long, population){
         const mapContainer = document.querySelector("#map");
         const mapOptions =  {
@@ -222,13 +230,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     }   
     /* Converts kelvin temperature data into the desired unit */
     function convertKelvinToUnit(unit, kelvins){
-        const convertedUnit = 0;
+        let convertedUnit = 0;
         switch(unit){
             case "celcius": 
-                convertedUnit = kelvins - 273.15;
+                convertedUnit = Math.round(kelvins - 273.15,1);
                 break;
             case "fahrenheit":
-                convertedUnit = 1.80 * (kelvins - 273.15) + 32.0;
+                convertedUnit = Math.round(1.80 * (kelvins - 273.15) + 32.0,1);
                 break;
             default:
                 console.log("invalid unit passed");        
