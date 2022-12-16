@@ -8,6 +8,7 @@
     <script src="./script.js" type="text/javascript"></script>
     <script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC0DYJzLE2RR4uGQwGD15TeHC8K1dCTI2Y&callback=initMap"></script>
     <link rel='stylesheet' href="./styles.css">
+    <link rel="icon" href="favicon.png">
 </head>
 <body>
     <!-- Input (text) -> {name of city}, {country} -> *SUBMIT* -> {fetch from JSON (City name, country, population, picture of city, lat/long)
@@ -22,7 +23,11 @@
     <section class="city-info-view">
         <div class="weather-info"> 
             <h2> Weather data will go here </h2>
-            <div class="current-temperature"> </div>
+
+            <div class="current-temperature"> Currently </div>
+            <div class="sunrise-time"> Sun rises: </div>
+            <div class="sunset-time"> Sun sets: </div>
+
         </div>
         <div class="weather-forecast">
 
@@ -31,7 +36,7 @@
             <h2 class="city-data name"> </h2>
             <h3 class="city-data country"></h3>
             <h3 class="city-data population"></h3>
-            <div class="city-data "></div>
+            <div class="city-data current-time"></div>
             <div class="city-data"></div>
         </div>
         <div class="city-map">

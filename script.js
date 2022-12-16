@@ -4,7 +4,9 @@
 */
 // SCRIPT tag is in the head of HTML, so DOM elements cannot be retrieved without waiting for them to load
 async function fetchEndpointData(endpoint){
-    return (await fetch(endpoint)).json();
+    const endpointResponse = await fetch(endpoint);
+    const JSONData = await endpointResponse.json();
+    return JSONData;
 }
 document.addEventListener("DOMContentLoaded", async () => {
     // Query Selectors for some of the data elements 
@@ -58,22 +60,51 @@ document.addEventListener("DOMContentLoaded", async () => {
         cityInput.textContent = "";
         loadCityInputPlaceholder(); // Load a new city placeholder
     }
-    function cityInfoDisplay(inputCity){
+    async function cityInfoDisplay(inputCity){
         changeView("city-info"); // Switches the page view to display city information
         // Lat and long retrieved from the city obj
         const cityLatitude = inputCity.lat;
         const cityLongitude = inputCity.lng;
         // Displays a map of the given location, based on the lat and long values given
-        initializeMap(cityLatitude, cityLongitude);
+        const map = initializeMap(cityLatitude, cityLongitude, inputCity.population);
         const weatherData = retrieveCityWeatherData(cityLatitude, cityLongitude);
+        // grab the time at the given location 
+        const timeAtLocation = calculateTimeAtLocation(weatherData.timezone);
+        document.querySelector(".current-time").textContent = `Current time + ${timeAtLocation}`;
+        console.log(weatherData);
         // Displays the city basic information 
         displayMainCityInfo(inputCity.city, inputCity.country, inputCity.population);
-        console.log(weatherData);
+    }
+    function getCityImage(map, cityName){
+        const imageRequest = {
+            location: map.getCenter(),
+            radius: '200',
+            query: cityName
+        };
+        const imageService = new google.maps.places.PlacesService(map);
+        imageService.textSearch(imageRequest, () => {
+
+        });
+
     }
     function displayMainCityInfo(name, country, population){
         cityNameContainer.textContent = name;
         cityCountryContainer.textContent = country;
         cityPopulationContainer.textContent = "Population of " + formatPopulationValue(population);
+    }
+    /* Determines how zoomed in the city map should be based on the population. Very accurate for most NA cities, less so for EU cities (heavy density) */
+    function getMapZoomLevelFromPopulation(population){
+        if (population < 75000){ // small & very small cities
+            return 13;
+        }else if (population >= 75000 && population < 250000){ // small -medium cities
+            return 12;
+        }else if (population >= 250000 && population < 10000000){ // medium size cities
+            return 11;
+        }else if (population >= 1000000 && population < 3000000){ // large cities 
+            return 10;
+        }else{ // VERY large cities
+            return 9;
+        }
     }
     /* Converts a number in the style 12428 to 12,428. Could have also used NumberFormat() lol */
     function formatPopulationValue(population){
@@ -99,7 +130,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 console.log("All cities in the dataset should fall within the given range...");
         }
         // After taking programming III, seeing nested loops makes me cringe a little bit. RIP time complexity, but cmon, we also don't need a hashtable for everything...
-        for (let i = 0; i<popLength; i++){
+        for (let i = 0; i <popLength; i++){
             for (let commaIndice of addCommaIndices){
                 if (i === commaIndice){
                     populationFormattedString += ",";
@@ -110,10 +141,10 @@ document.addEventListener("DOMContentLoaded", async () => {
         return populationFormattedString; 
     }
     /* Retrieves and returns the weather data associated with the given coordinates */
-    async function retrieveCityWeatherData(cLat, cLong){
+    function retrieveCityWeatherData(cLat, cLong){
         let weatherData = "";
         try{
-            weatherData = await fetchEndpointData(`https://api.openweathermap.org/data/3.0/onecall?lat=${cLat}&lon=${cLong}&appid=3c7bc9f835d589478c313a48f04509d2`)
+            weatherData = fetchEndpointData(`https://api.openweathermap.org/data/3.0/onecall?lat=${cLat}&lon=${cLong}&appid=3c7bc9f835d589478c313a48f04509d2`).then(weatherData => weatherData);
         }
         catch(e){
             console.log("An error occured while fetching your weather data!" + e);
@@ -121,12 +152,18 @@ document.addEventListener("DOMContentLoaded", async () => {
         return weatherData;
     }
     function retrieveRelevantWeatherData(weatherObj){
-
+        const weatherDescription = weatherObj.weather.description;
+        const tempCelcius = convertKelvinToUnit('celcius', weatherObj.weather.temp);
+        const tempFahrenheit = convertKelvinToUnit('fahrenheit', weatherObj.weather.temp);
     }
-    function initializeMap(lat, long){
+    function calculateTimeAtLocation(locationTimezone){
+        const timeInArea = new Date().toLocaleDateString("en-us", {timezone: locationTimezone});
+        return timeInArea.split(",")[1]; // Returns the current time 
+    }
+    function initializeMap(lat, long, population){
         const mapContainer = document.querySelector("#map");
         const mapOptions =  {
-                zoom: 10,
+                zoom: getMapZoomLevelFromPopulation(population),
                 // These options make the map relatively static, as to only display the city that we're looking at.
                 draggable: false, 
                 zoomControl: false,
@@ -135,6 +172,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 mapTypeId: "hybrid",
         };
         const map = new google.maps.Map(mapContainer, mapOptions);
+        return map;
     }
     function getSpecifiedCity(userCityInput){
         let userCity = "";
@@ -178,7 +216,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     /* Simple function that checks to see if the current user input string matches any of the song titles in the JSON file */
     function findMatches(currentInput, cityCountryObj){
         const matchArray = []
-        const matches = cityCountryObj.filter((entry) => entry.location.includes(currentInput));
+        const matches = cityCountryObj.filter((entry) => entry.location.toLowerCase().includes(currentInput.toLowerCase()));
         matches.forEach((match) => {matchArray.push(match.location)})
         return matchArray; // Returns the results from the search
     }   
