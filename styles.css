@@ -1,16 +1,18 @@
 @import url('https://fonts.googleapis.com/css2?family=Lora&display=swap');
 body{
-    margin: 1rem 3rem;
+    margin: 2rem 5rem;
     height: 100vh;
-    background-image: url("./background-images/cold.jpg");
     background-size: cover;
     background-color: gray;
     font-family: 'Lora', serif;
     color: black;
     text-shadow: 0.6px 0.6px 3px snow;
 }
+
 .city-input-view{
+    text-align: center;
     width: 50%;
+    min-width: 350px;
     height: 15%;
     position: relative;
     top: 50%;
@@ -23,9 +25,8 @@ input[type='text']{
     color: black;
     box-shadow: 2px 2px 6px black;  
     border-radius: 8px;
-    width:  40%;
-    width: 550px;
-    max-width: 575px;
+    width:  75%;
+    max-width: 550px;
     min-width: 250px;
     border: 0.8px solid purple;
 }
@@ -40,6 +41,7 @@ button{
     text-shadow: 1px 1px black;
     border: 1px solid black;
     width: 100px;
+    min-width: 50px;
     color: white;
 }
 button:hover{

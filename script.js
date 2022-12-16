@@ -2,6 +2,7 @@
 * The idea of this project was to display convenient and relevant weather info about a given city (25,000+ inhabitants for this website),
 * along with practicing API calls. I'm using the Google Maps API to retrieve a description of the given city
 */
+
 // SCRIPT tag is in the head of HTML, so DOM elements cannot be retrieved without waiting for them to load
 async function fetchEndpointData(endpoint){
     const endpointResponse = await fetch(endpoint);
@@ -14,6 +15,10 @@ const countryEmojis = new Map([ ["United Arab Emirates","🇦🇪"],["Afghanista
                     ["Cambodia","🇰🇭"],["Kiribati","🇰🇮"],["Comoros","🇰🇲"],["North Korea","🇰🇵"],["South Korea","🇰🇷"],["Kuwait","🇰🇼"],["Cayman Islands","🇰🇾"],["Kazakhstan","🇰🇿"],["Laos","🇱🇦"],["Lebanon","🇱🇧"],["St. Lucia","🇱🇨"],["Liechtenstein","🇱🇮"],["Sri Lanka","🇱🇰"],["Liberia","🇱🇷"],["Lesotho","🇱🇸"],["Lithuania","🇱🇹"],["Luxembourg","🇱🇺"],["Latvia","🇱🇻"],["Libya","🇱🇾"],["Morocco","🇲🇦"],["Monaco","🇲🇨"],["Moldova","🇲🇩"],["Montenegro","🇲🇪"],["Madagascar","🇲🇬"],["Marshall Islands","🇲🇭"],["Macedonia","🇲🇰"],["Mali","🇲🇱"],["Myanmar","🇲🇲"],["Mongolia","🇲🇳"],["Macau SAR China","🇲🇴"],["Northern Mariana Islands","🇲🇵"],["Martinique","🇲🇶"],["Mauritania","🇲🇷"],["Montserrat","🇲🇸"],["Malta","🇲🇹"],["Mauritius","🇲🇺"],["Maldives","🇲🇻"],["Malawi","🇲🇼"],["Mexico","🇲🇽"],["Malaysia","🇲🇾"],["Mozambique","🇲🇿"],["Namibia","🇳🇦"],["New Caledonia","🇳🇨"],["Niger","🇳🇪"],["Norfolk Island","🇳🇫"],["Nigeria","🇳🇬"],["Nicaragua","🇳🇮"],["Netherlands","🇳🇱"],["Norway","🇳🇴"],["Nepal","🇳🇵"],["Nauru","🇳🇷"],["Niue","🇳🇺"],["New Zealand","🇳🇿"],["Oman","🇴🇲"],["Panama","🇵🇦"],["Peru","🇵🇪"],["French Polynesia","🇵🇫"],["Papua New Guinea","🇵🇬"],["Philippines","🇵🇭"],["Pakistan","🇵🇰"],["Poland","🇵🇱"],["Puerto Rico","🇵🇷"],["Portugal","🇵🇹"],["Paraguay","🇵🇾"],["Qatar","🇶🇦"],["Reunion","🇷🇪"],["Romania","🇷🇴"],["Serbia","🇷🇸"],["Russia","🇷🇺"],["Rwanda","🇷🇼"],["Saudi Arabia","🇸🇦"],["Solomon Islands","🇸🇧"],["Seychelles","🇸🇨"],["Sudan","🇸🇩"],["Sweden","🇸🇪"],["Singapore","🇸🇬"],["Slovenia","🇸🇮"],["Slovakia","🇸🇰"],["Sierra Leone","🇸🇱"],["San Marino","🇸🇲"],["Senegal","🇸🇳"],["Somalia","🇸🇴"],["Suriname","🇸🇷"],["South Sudan","🇸🇸"],["El Salvador","🇸🇻"],["Syria","🇸🇾"],["Swaziland","🇸🇿"],["Tristan da Cunha","🇹🇦"],["Turks & Caicos Islands","🇹🇨"],["Chad","🇹🇩"],["French Southern Territories","🇹🇫"],["Togo","🇹🇬"],["Thailand","🇹🇭"],["Tajikistan","🇹🇯"],["Timor-Leste","🇹🇱"],["Turkmenistan","🇹🇲"],["Tunisia","🇹🇳"],["Tonga","🇹🇴"],["Turkey","🇹🇷"],["Trinidad & Tobago","🇹🇹"],["Taiwan","🇹🇼"],["Tanzania","🇹🇿"],["Ukraine","🇺🇦"],["Uganda","🇺🇬"],["United States","🇺🇸"],["Uruguay","🇺🇾"],["Uzbekistan","🇺🇿"],["St. Vincent & Grenadines","🇻🇨"],["Venezuela","🇻🇪"],["Vietnam","🇻🇳"],["Vanuatu","🇻🇺"],["South Africa","🇿🇦"],["Zambia","🇿🇲"],["Zimbabwe","🇿🇼"] ]);
 
 document.addEventListener("DOMContentLoaded", async () => {
+    // Select random background image 
+    const NUM_BG_IMAGES = 5; // This is hardcoded for now, and will be changed later on -> bash script could retrieve the count from directory and hand it as a variable
+    const imageIndex = Math.ceil(Math.random() * NUM_BG_IMAGES);
+    document.querySelector("body").style.backgroundImage = `url('./background-images/bg${imageIndex}.jpg')`;
     // Query Selectors for some of the data elements 
     const cityNameCountryContainer = document.querySelector(".name-country");
     const cityPopulationContainer = document.querySelector(".population");
@@ -168,14 +173,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         document.querySelector(".current-temperature").textContent += `Currently: ${convertKelvinToUnit('celcius', weatherObj.current.temp)}°C / ${convertKelvinToUnit('fahrenheit', weatherObj.current.temp)}°F`;
     }
     function calculateTimeAtLocation(locationTimezone){
-        console.log(locationTimezone)
         const dateAndTimeAtArea = new Date().toLocaleString("en-us", {timezone: locationTimezone});
-        const date = () => {
-            let formattedDateString 
-            const currentDate = dateAndTimeAtArea.split(",")[0];
-
-        }
-        return timeInArea; // Returns the current time at the location
+        return dateAndTimeAtArea; // Returns the current time at the location
     } 
     function initializeMap(lat, long, population){
         const mapContainer = document.querySelector("#map");
