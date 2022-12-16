@@ -8,6 +8,11 @@ async function fetchEndpointData(endpoint){
     const JSONData = await endpointResponse.json();
     return JSONData;
 }
+// A map (k,v) pairs that contains the name of a country, and its associated flag, for every country in the file (and a few more)
+// This is a modified (simplified) version of the data from https://github.com/risan/country-flag-emoji/blob/master/src/data.js
+const countryEmojis = new Map([ ["United Arab Emirates","🇦🇪"],["Afghanistan","🇦🇫"],["Albania","🇦🇱"],["Armenia","🇦🇲"],["Angola","🇦🇴"],["Argentina","🇦🇷"],["Austria","🇦🇹"],["Australia","🇦🇺"],["Aruba","🇦🇼"],["Azerbaijan","🇦🇿"],["Bosnia & Herzegovina","🇧🇦"],["Barbados","🇧🇧"],["Bangladesh","🇧🇩"],["Belgium","🇧🇪"],["Burkina Faso","🇧🇫"],["Bulgaria","🇧🇬"],["Bahrain","🇧🇭"],["Burundi","🇧🇮"],["Benin","🇧🇯"],["Bermuda","🇧🇲"],["Brunei","🇧🇳"],["Bolivia","🇧🇴"],["Brazil","🇧🇷"],["The Bahamas","🇧🇸"],["Bhutan","🇧🇹"],["Bouvet Island","🇧🇻"],["Botswana","🇧🇼"],["Belarus","🇧🇾"],["Belize","🇧🇿"],["Canada","🇨🇦"],["Congo (Kinshasa)","🇨🇩"],["Central African Republic","🇨🇫"],["Congo - Brazzaville","🇨🇬"],["Switzerland","🇨🇭"],["Côte d'Ivoire","🇨🇮"],["Cook Islands","🇨🇰"],["Chile","🇨🇱"],["Cameroon","🇨🇲"],["China","🇨🇳"],["Colombia","🇨🇴"],["Clipperton Island","🇨🇵"],["Costa Rica","🇨🇷"],["Cuba","🇨🇺"],["Cape Verde","🇨🇻"],["Curaçao","🇨🇼"],["Christmas Island","🇨🇽"],["Cyprus","🇨🇾"],["Czechia","🇨🇿"],["Germany","🇩🇪"],["Diego Garcia","🇩🇬"],["Djibouti","🇩🇯"],["Denmark","🇩🇰"],["Dominica","🇩🇲"],["Dominican Republic","🇩🇴"],["Algeria","🇩🇿"],["Ceuta & Melilla","🇪🇦"],["Ecuador","🇪🇨"],["Estonia","🇪🇪"],["Egypt","🇪🇬"],["Western Sahara","🇪🇭"],["Eritrea","🇪🇷"],["Spain","🇪🇸"],["Ethiopia","🇪🇹"],["European Union","🇪🇺"],["Finland","🇫🇮"],["Fiji","🇫🇯"],["Falkland Islands","🇫🇰"],["Micronesia","🇫🇲"],["Faroe Islands","🇫🇴"],["France","🇫🇷"],["Gabon","🇬🇦"],["United Kingdom","🇬🇧"],["Grenada","🇬🇩"],["Georgia","🇬🇪"],["French Guiana","🇬🇫"],["Guernsey","🇬🇬"],["Ghana","🇬🇭"],["Gibraltar","🇬🇮"],["Greenland","🇬🇱"],["Gambia","🇬🇲"],["Guinea","🇬🇳"],["Guadeloupe","🇬🇵"],["Equatorial Guinea","🇬🇶"],["Greece","🇬🇷"],["Guatemala","🇬🇹"],["Guam","🇬🇺"],["Guinea-Bissau","🇬🇼"],["Guyana","🇬🇾"],["Hong Kong SAR China","🇭🇰"],["Heard & McDonald Islands","🇭🇲"],["Honduras","🇭🇳"],["Croatia","🇭🇷"],["Haiti","🇭🇹"],["Hungary","🇭🇺"],["Canary Islands","🇮🇨"],["Indonesia","🇮🇩"],["Ireland","🇮🇪"],["Israel","🇮🇱"],["Isle of Man","🇮🇲"],["India","🇮🇳"],["Iraq","🇮🇶"],["Iran","🇮🇷"],["Iceland","🇮🇸"],["Italy","🇮🇹"],["Jersey","🇯🇪"],["Jamaica","🇯🇲"],["Jordan","🇯🇴"],["Japan","🇯🇵"],["Kenya","🇰🇪"],["Kyrgyzstan","🇰🇬"],["Samoa","🇼🇸"],["Kosovo","🇽🇰"],["Yemen","🇾🇪"],["Mayotte","🇾🇹"],
+                    ["Cambodia","🇰🇭"],["Kiribati","🇰🇮"],["Comoros","🇰🇲"],["North Korea","🇰🇵"],["South Korea","🇰🇷"],["Kuwait","🇰🇼"],["Cayman Islands","🇰🇾"],["Kazakhstan","🇰🇿"],["Laos","🇱🇦"],["Lebanon","🇱🇧"],["St. Lucia","🇱🇨"],["Liechtenstein","🇱🇮"],["Sri Lanka","🇱🇰"],["Liberia","🇱🇷"],["Lesotho","🇱🇸"],["Lithuania","🇱🇹"],["Luxembourg","🇱🇺"],["Latvia","🇱🇻"],["Libya","🇱🇾"],["Morocco","🇲🇦"],["Monaco","🇲🇨"],["Moldova","🇲🇩"],["Montenegro","🇲🇪"],["Madagascar","🇲🇬"],["Marshall Islands","🇲🇭"],["Macedonia","🇲🇰"],["Mali","🇲🇱"],["Myanmar","🇲🇲"],["Mongolia","🇲🇳"],["Macau SAR China","🇲🇴"],["Northern Mariana Islands","🇲🇵"],["Martinique","🇲🇶"],["Mauritania","🇲🇷"],["Montserrat","🇲🇸"],["Malta","🇲🇹"],["Mauritius","🇲🇺"],["Maldives","🇲🇻"],["Malawi","🇲🇼"],["Mexico","🇲🇽"],["Malaysia","🇲🇾"],["Mozambique","🇲🇿"],["Namibia","🇳🇦"],["New Caledonia","🇳🇨"],["Niger","🇳🇪"],["Norfolk Island","🇳🇫"],["Nigeria","🇳🇬"],["Nicaragua","🇳🇮"],["Netherlands","🇳🇱"],["Norway","🇳🇴"],["Nepal","🇳🇵"],["Nauru","🇳🇷"],["Niue","🇳🇺"],["New Zealand","🇳🇿"],["Oman","🇴🇲"],["Panama","🇵🇦"],["Peru","🇵🇪"],["French Polynesia","🇵🇫"],["Papua New Guinea","🇵🇬"],["Philippines","🇵🇭"],["Pakistan","🇵🇰"],["Poland","🇵🇱"],["Puerto Rico","🇵🇷"],["Portugal","🇵🇹"],["Paraguay","🇵🇾"],["Qatar","🇶🇦"],["Reunion","🇷🇪"],["Romania","🇷🇴"],["Serbia","🇷🇸"],["Russia","🇷🇺"],["Rwanda","🇷🇼"],["Saudi Arabia","🇸🇦"],["Solomon Islands","🇸🇧"],["Seychelles","🇸🇨"],["Sudan","🇸🇩"],["Sweden","🇸🇪"],["Singapore","🇸🇬"],["Slovenia","🇸🇮"],["Slovakia","🇸🇰"],["Sierra Leone","🇸🇱"],["San Marino","🇸🇲"],["Senegal","🇸🇳"],["Somalia","🇸🇴"],["Suriname","🇸🇷"],["South Sudan","🇸🇸"],["El Salvador","🇸🇻"],["Syria","🇸🇾"],["Swaziland","🇸🇿"],["Tristan da Cunha","🇹🇦"],["Turks & Caicos Islands","🇹🇨"],["Chad","🇹🇩"],["French Southern Territories","🇹🇫"],["Togo","🇹🇬"],["Thailand","🇹🇭"],["Tajikistan","🇹🇯"],["Timor-Leste","🇹🇱"],["Turkmenistan","🇹🇲"],["Tunisia","🇹🇳"],["Tonga","🇹🇴"],["Turkey","🇹🇷"],["Trinidad & Tobago","🇹🇹"],["Taiwan","🇹🇼"],["Tanzania","🇹🇿"],["Ukraine","🇺🇦"],["Uganda","🇺🇬"],["United States","🇺🇸"],["Uruguay","🇺🇾"],["Uzbekistan","🇺🇿"],["St. Vincent & Grenadines","🇻🇨"],["Venezuela","🇻🇪"],["Vietnam","🇻🇳"],["Vanuatu","🇻🇺"],["South Africa","🇿🇦"],["Zambia","🇿🇲"],["Zimbabwe","🇿🇼"] ]);
+
 document.addEventListener("DOMContentLoaded", async () => {
     // Query Selectors for some of the data elements 
     const cityNameCountryContainer = document.querySelector(".name-country");
@@ -90,7 +95,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     }
     function displayMainCityInfo(name, country, population){
-        cityNameCountryContainer.textContent = name + ", " + country;
+        cityNameCountryContainer.textContent = name + ", " + country + " " + getCountryEmoji(country);
         cityPopulationContainer.textContent = "Population of " + formatPopulationValue(population);
     }
     /* Determines how zoomed in the city map should be based on the population. Very accurate for most NA cities, less so for EU cities (heavy density) */
@@ -159,14 +164,18 @@ document.addEventListener("DOMContentLoaded", async () => {
         document.querySelector(".sunrise-time").textContent = "Sun rises at " + new Date(weatherObj.current.sunrise * 1000);
         document.querySelector(".sunset-time").textContent = "Sun sets at " + new Date(weatherObj.current.sunset * 1000);
         document.querySelector(".humidity").textContent = "Humidity: " +weatherObj.current.humidity + "%";
-        document.querySelector(".weather-description").textContent = "City has a forecast of " + weatherObj.current.weather[0].description;
-        document.querySelector(".current-temperature").textContent += `Current temperature: ${convertKelvinToUnit('celcius', weatherObj.current.temp)}°C / ${convertKelvinToUnit('fahrenheit', weatherObj.current.temp)}°F`;
+        document.querySelector(".weather-description").textContent = weatherObj.current.weather[0].description;
+        document.querySelector(".current-temperature").textContent += `Currently: ${convertKelvinToUnit('celcius', weatherObj.current.temp)}°C / ${convertKelvinToUnit('fahrenheit', weatherObj.current.temp)}°F`;
     }
     function calculateTimeAtLocation(locationTimezone){
         console.log(locationTimezone)
-        const timeInArea = new Date().toLocaleDateString("en-us", {timezone: locationTimezone});
-        console.log(timeInArea);
-        return timeInArea.split(",")[1]; // Returns the current time 
+        const dateAndTimeAtArea = new Date().toLocaleString("en-us", {timezone: locationTimezone});
+        const date = () => {
+            let formattedDateString 
+            const currentDate = dateAndTimeAtArea.split(",")[0];
+
+        }
+        return timeInArea; // Returns the current time at the location
     } 
     function initializeMap(lat, long, population){
         const mapContainer = document.querySelector("#map");
@@ -194,6 +203,21 @@ document.addEventListener("DOMContentLoaded", async () => {
             }
         }
         return userCity;
+    }
+    function makeWindVectorArrow(magnitude, direction){
+
+    }
+    function createPhotoMarker(place) {
+        const photos = place.photos;
+        if (!photos) {
+            return;
+        }
+        const marker = new google.maps.Marker({
+            map: map,
+            position: place.geometry.location,
+            title: place.name,
+            icon: photos[0].getUrl({maxWidth: 35, maxHeight: 35})
+        });
     }
     function changeView(newView){
         if (newView === 'search'){
@@ -243,5 +267,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
         return convertedUnit;
     }
-    //const countryFlagsMap = new Map<String, String>("Afghanistan""🇦🇫");
+    // Finds and retrieves the emoji (flag) of the given country
+    function getCountryEmoji(countryName){
+        return (countryEmojis.get(countryName));
+    }
+
 });
