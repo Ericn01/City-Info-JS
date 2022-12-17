@@ -75,7 +75,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         const cityLatitude = inputCity.lat;
         const cityLongitude = inputCity.lng;
         // Displays a map of the given location, based on the lat and long values given
-        const map = initializeMap(cityLatitude, cityLongitude, inputCity.population);
+        const cityCountry = inputCity.city + "," + inputCity.country;
+        initializeMap(cityLatitude, cityLongitude, inputCity.population, cityCountry);
         // Receive and return the weather data for the given city
         const weatherData = await retrieveCityWeatherData(cityLatitude, cityLongitude).then(res => res);
         makeRelevantWeatherDataMarkup(weatherData);
@@ -85,20 +86,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         // Displays the city basic information 
         displayMainCityInfo(inputCity.city, inputCity.country, inputCity.population);
     }
-    
 
-    function getCityImage(map, cityName){
-        const imageRequest = {
-            location: map.getCenter(),
-            radius: '200',
-            query: cityName
-        };
-        const imageService = new google.maps.places.PlacesService(map);
-        imageService.textSearch(imageRequest, () => {
-
-        });
-
-    }
     function displayMainCityInfo(name, country, population){
         cityNameCountryContainer.textContent = name + ", " + country + " " + getCountryEmoji(country);
         cityPopulationContainer.textContent = "Population of " + formatPopulationValue(population);
@@ -155,7 +143,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     function retrieveCityWeatherData(cLat, cLong){
         let weatherData = "";
         try{
-            weatherData = fetchEndpointData(`https://api.openweathermap.org/data/3.0/onecall?lat=${cLat}&lon=${cLong}&exclude=alerts,minutely&appid=3c7bc9f835d589478c313a48f04509d2`).then(weatherData => weatherData);
+            weatherData = fetchEndpointData(`https://api.openweathermap.org/data/3.0/onecall?lat=${cLat}&lon=${cLong}&exclude=alerts,minutely,hourly&appid=3c7bc9f835d589478c313a48f04509d2`).then(weatherData => weatherData);
         }
         catch(e){
             console.log("An error occured while fetching your weather data!" + e);
@@ -176,19 +164,45 @@ document.addEventListener("DOMContentLoaded", async () => {
         const dateAndTimeAtArea = new Date().toLocaleString("en-us", {timezone: locationTimezone});
         return dateAndTimeAtArea; // Returns the current time at the location
     } 
-    function initializeMap(lat, long, population){
+    function initializeMap(lat, long, population, cityCountry){
         const mapContainer = document.querySelector("#map");
+        const location = google.maps.LatLng(lat, long);
         const mapOptions =  {
                 zoom: getMapZoomLevelFromPopulation(population),
                 // These options make the map relatively static, as to only display the city that we're looking at.
                 draggable: false, 
                 zoomControl: false,
                 scrollwheel: false,
-                center: new google.maps.LatLng(lat, long),
+                center: location,
                 mapTypeId: "hybrid",
         };
+        // Create the map
         const map = new google.maps.Map(mapContainer, mapOptions);
-        return map;
+        // Use the map and places service to get a placeId
+        const placeService = new google.maps.places.PlacesService(map);
+        // Query parameters
+        const queryParams = {
+            query: cityCountry, 
+            fields: ['photos'],
+        };
+        // Perform a search on the location and log out the results
+        placeService.findPlaceFromQuery(queryParams, function(results, status){
+            if (status === google.maps.places.PlacesServiceStatus.OK){
+                for (result of results){
+                    console.log(result);
+                    if (result.photos !== ""){
+                        const photoDiv = document.querySelector("#google-maps-city-photo");
+                        photoDiv.innerHTML = ""; // resets any previous images in there
+                        const cityImg = document.createElement("img");
+                        cityImg.setAttribute("src", result.photos[0].getUrl());
+                        cityImg.setAttribute("alt", 'City Image');
+                        cityImg.style.width = '300px';
+                        cityImg.style.border = '2px solid black';
+                        photoDiv.appendChild(cityImg);
+                    }
+                }
+            }
+        });
     }
     function getSpecifiedCity(userCityInput){
         let userCity = "";
@@ -205,18 +219,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
     function makeWindVectorArrow(magnitude, direction){
 
-    }
-    function createPhotoMarker(place) {
-        const photos = place.photos;
-        if (!photos) {
-            return;
-        }
-        const marker = new google.maps.Marker({
-            map: map,
-            position: place.geometry.location,
-            title: place.name,
-            icon: photos[0].getUrl({maxWidth: 35, maxHeight: 35})
-        });
     }
     function changeView(newView){
         if (newView === 'search'){
@@ -262,7 +264,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 convertedUnit = Math.round(1.80 * (kelvins - 273.15) + 32.0,1);
                 break;
             default:
-                console.log("invalid unit passed");        
+                console.log("invalid unit parameter passed");        
         }
         return convertedUnit;
     }
@@ -270,5 +272,19 @@ document.addEventListener("DOMContentLoaded", async () => {
     function getCountryEmoji(countryName){
         return (countryEmojis.get(countryName));
     }
+    // ================================== PLACES API ============================================
 
+    function createPhotoMarker(place) {
+        const photos = place.photos;
+        if (!photos) {
+            return;
+        }
+        const marker = new google.maps.Marker({
+            map: map,
+            position: place.geometry.location,
+            title: place.name,
+            icon: photos[0].getUrl({maxWidth: 35, maxHeight: 35})
+        });
+    }
+    
 });
