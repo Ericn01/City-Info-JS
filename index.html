@@ -6,16 +6,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lookup a City!</title>
     <script src="./script.js" type="text/javascript"></script>
-    <script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAv4FmkGcMAf96CbsMMiozOTbfMyUBTieA&libraries=places&callback=initMap"> </script>
+    <script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAv4FmkGcMAf96CbsMMiozOTbfMyUBTieA&libraries=places&callback=initMap"> </script> <!-- Maps API script -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Chart JS Script -->
     <link rel='stylesheet' href="./styles.css">
     <link rel="icon" href="images/favicon.png">
 </head>
 <body>
     <!-- Input (text) -> {name of city}, {country} -> *SUBMIT* -> {fetch from JSON (City name, country, population, picture of city, lat/long)
     } -> retrieve LAT/LONG info -> fetch from weather API -> retrieve weather data. Display it! -->
-    <h1> City Information Tool </h1>
-    <h2> Lookup a City to Start! </h2>
     <section class="city-input-view">
+        <h1> City Information Tool </h1>
+        <h2> Lookup a City to Start! </h2>
         <input type="text" id="city-input" placeholder="Enter City Name!" list="location-data-list" autocomplete="off">
         <datalist id="location-data-list"> </datalist>
         <button id="city-submit-btn"> Locate 🔎 </button>
@@ -23,12 +24,13 @@
     </section>
     <section class="city-info-view">
         <div class="city-specific-info"> 
-            <h2 class="city-data name-country"> </h2>
+            <h1 class="city-data name-country"> </h1>
             <h3 class="city-data population"></h3>
             <div class="city-data current-time"></div>
             <div class="city-data"></div>
         </div>
         <div class="city-img" id="google-maps-city-photo">
+            <h2> City Image </h2>
         </div>
         <div class="weather-info"> 
             <h2> Weather Info </h2>
@@ -46,6 +48,9 @@
         <div class="city-map">
             <h1> City Map: </h1>
             <div id="map"></div>
+        </div>
+        <div class="weather-chart-container"> 
+            <canvas id="weather-chart"></canvas>
         </div>
     </section>
 </body>

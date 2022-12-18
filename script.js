@@ -82,9 +82,22 @@ document.addEventListener("DOMContentLoaded", async () => {
         makeRelevantWeatherDataMarkup(weatherData);
         // grab the time at the given location 
         const timeAtLocation = calculateTimeAtLocation(weatherData.timezone);
-        document.querySelector(".current-time").textContent = `${timeAtLocation}`;
+        document.querySelector(".current-time").textContent = `Date: ${timeAtLocation}`;
         // Displays the city basic information 
         displayMainCityInfo(inputCity.city, inputCity.country, inputCity.population);
+        // Make the weather chart
+        const wData = getWeatherChartData(weatherData.daily); // min, max, avg data  
+        makeWeatherChart(wData.minTemp, wData.maxTemp, wData.dayTemp);
+    }
+    function getWeatherChartData(weatherData){
+        const min = [];const max = [];const day = [];
+        weatherData.forEach( (entry) => {
+            min.push(convertKelvinToUnit('celcius',entry.temp.min));
+            max.push(convertKelvinToUnit('celcius',entry.temp.max));
+            day.push(convertKelvinToUnit('celcius',entry.temp.day));
+        });
+
+        return {"minTemp": min, "maxTemp": max, "dayTemp": day};
     }
     function displayMainCityInfo(name, country, population){
         cityNameCountryContainer.textContent = name + ", " + country + " " + getCountryEmoji(country);
@@ -278,5 +291,34 @@ document.addEventListener("DOMContentLoaded", async () => {
     function getCountryEmoji(countryName){
         return (countryEmojis.get(countryName));
     }
-    
+    // ==================================== WEATHER CHART ============================
+    function makeWeatherChart(minData, maxData, dayData){
+        console.log(minData, maxData, dayData);
+        const context = document.querySelector("#weather-chart").getContext('2d');
+        const labels = ['Monday, Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday', 'Lol']
+        const data = {
+            labels: labels,
+            datasets: [{
+                label: 'Day Temperature',
+                data: dayData,
+                fill: false,
+                tension: 0.1
+            },
+            {
+                label: 'Max Temperature',
+                data: maxData,
+                fill: false,
+                tension: 0.1
+            },
+            {
+                label: 'Min Temperature',
+                data: minData,
+                fill: false,
+                tension: 0.1
+            }
+            ]
+        };
+        const chartConfig = {type: 'line', data:data};
+        new Chart(context, chartConfig); // create and display the chart
+    }
 });
