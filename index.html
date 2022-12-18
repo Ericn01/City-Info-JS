@@ -8,12 +8,13 @@
     <script src="./script.js" type="text/javascript"></script>
     <script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAv4FmkGcMAf96CbsMMiozOTbfMyUBTieA&libraries=places&callback=initMap"> </script>
     <link rel='stylesheet' href="./styles.css">
-    <link rel="icon" href="favicon.png">
+    <link rel="icon" href="images/favicon.png">
 </head>
 <body>
     <!-- Input (text) -> {name of city}, {country} -> *SUBMIT* -> {fetch from JSON (City name, country, population, picture of city, lat/long)
     } -> retrieve LAT/LONG info -> fetch from weather API -> retrieve weather data. Display it! -->
-    <h1> Lookup a City to Start! </h1>
+    <h1> City Information Tool </h1>
+    <h2> Lookup a City to Start! </h2>
     <section class="city-input-view">
         <input type="text" id="city-input" placeholder="Enter City Name!" list="location-data-list" autocomplete="off">
         <datalist id="location-data-list"> </datalist>
@@ -30,10 +31,10 @@
         <div class="city-img" id="google-maps-city-photo">
         </div>
         <div class="weather-info"> 
-            <h2> Weather data will go here </h2>
+            <h2> Weather Info </h2>
             <div class="current-temperature"> </div>
-            <div class="sunrise-time"> </div>
-            <div class="sunset-time"> </div>
+            <img id="#sunrise-img" src="./images/weather-assets/sunrise.png"> <div class="sunrise-time"> </div>
+            <img id="#sunset-img" src="./images/weather-assets/sunset.png"> <div class="sunset-time"> </div>
             <div class="humidity"></div>
             <div class="wind-speed"></div>
             <div class="weather-description"> </div>

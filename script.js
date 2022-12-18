@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Select random background image 
     const NUM_BG_IMAGES = 5; // This is hardcoded for now, and will be changed later on -> bash script could retrieve the count from directory and hand it as a variable
     const imageIndex = Math.ceil(Math.random() * NUM_BG_IMAGES);
-    document.querySelector("body").style.backgroundImage = `url('./background-images/bg${imageIndex}.jpg')`;
+    document.querySelector("body").style.backgroundImage = `url('./images/background-images/bg${imageIndex}.jpg')`;
     // Query Selectors for some of the data elements 
     const cityNameCountryContainer = document.querySelector(".name-country");
     const cityPopulationContainer = document.querySelector(".population");
@@ -82,11 +82,10 @@ document.addEventListener("DOMContentLoaded", async () => {
         makeRelevantWeatherDataMarkup(weatherData);
         // grab the time at the given location 
         const timeAtLocation = calculateTimeAtLocation(weatherData.timezone);
-        document.querySelector(".current-time").textContent = `Current time + ${timeAtLocation}`;
+        document.querySelector(".current-time").textContent = `${timeAtLocation}`;
         // Displays the city basic information 
         displayMainCityInfo(inputCity.city, inputCity.country, inputCity.population);
     }
-
     function displayMainCityInfo(name, country, population){
         cityNameCountryContainer.textContent = name + ", " + country + " " + getCountryEmoji(country);
         cityPopulationContainer.textContent = "Population of " + formatPopulationValue(population);
@@ -152,28 +151,32 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
     /* Generates the markup for the weather data we want to display */
     function makeRelevantWeatherDataMarkup(weatherObj){
+        const sunriseTime = new Date(weatherObj.current.sunrise * 1000);
+        const sunsetTime = new Date(weatherObj.current.sunset * 1000);
         console.log(weatherObj);
         document.querySelectorAll(".weather-info div").forEach( (info) => info.textContent = ""); // Clears the text content of each node.
-        document.querySelector(".sunrise-time").textContent = "Sun rises at " + new Date(weatherObj.current.sunrise * 1000);
-        document.querySelector(".sunset-time").textContent = "Sun sets at " + new Date(weatherObj.current.sunset * 1000);
+        document.querySelector(".sunrise-time").textContent += String(sunriseTime).substring(4, 24);
+        document.querySelector(".sunset-time").textContent += String(sunsetTime).substring(4,24);
         document.querySelector(".humidity").textContent = "Humidity: " +weatherObj.current.humidity + "%";
-        document.querySelector(".weather-description").textContent = weatherObj.current.weather[0].description;
-        document.querySelector(".current-temperature").textContent += `Currently: ${convertKelvinToUnit('celcius', weatherObj.current.temp)}°C / ${convertKelvinToUnit('fahrenheit', weatherObj.current.temp)}°F`;
+        document.querySelector(".weather-description").textContent = "Forecast: " + weatherObj.current.weather[0].description;
+        document.querySelector(".wind-speed").textContent = "Wind Speed: " + weatherObj.current.wind_speed + "km/h";
+        document.querySelector(".current-temperature").textContent += `Currently ${convertKelvinToUnit('celcius', weatherObj.current.temp)}°C / ${convertKelvinToUnit('fahrenheit', weatherObj.current.temp)}°F |
+                                                                        Feels like ${convertKelvinToUnit('celcius', weatherObj.current.feels_like)}°C / ${convertKelvinToUnit('fahrenheit', weatherObj.current.feels_like)}°F`;
     }
     function calculateTimeAtLocation(locationTimezone){
-        const dateAndTimeAtArea = new Date().toLocaleString("en-us", {timezone: locationTimezone});
+        const dateAndTimeAtArea = new Date().toLocaleString("en-us", {timeZone: locationTimezone, hour12: "true"});
         return dateAndTimeAtArea; // Returns the current time at the location
     } 
-    function initializeMap(lat, long, population, cityCountry){
+    function initializeMap(latitude, longitude, population, cityCountry){
         const mapContainer = document.querySelector("#map");
-        const location = google.maps.LatLng(lat, long);
+        const locationCenter = google.maps.LatLngLiteral = {lat: latitude, lng: longitude};
         const mapOptions =  {
+                center: locationCenter,
                 zoom: getMapZoomLevelFromPopulation(population),
                 // These options make the map relatively static, as to only display the city that we're looking at.
                 draggable: false, 
                 zoomControl: false,
                 scrollwheel: false,
-                center: location,
                 mapTypeId: "hybrid",
         };
         // Create the map
@@ -189,14 +192,13 @@ document.addEventListener("DOMContentLoaded", async () => {
         placeService.findPlaceFromQuery(queryParams, function(results, status){
             if (status === google.maps.places.PlacesServiceStatus.OK){
                 for (result of results){
-                    console.log(result);
                     if (result.photos !== ""){
                         const photoDiv = document.querySelector("#google-maps-city-photo");
                         photoDiv.innerHTML = ""; // resets any previous images in there
                         const cityImg = document.createElement("img");
                         cityImg.setAttribute("src", result.photos[0].getUrl());
                         cityImg.setAttribute("alt", 'City Image');
-                        cityImg.style.width = '300px';
+                        cityImg.style.width = '450px';
                         cityImg.style.border = '2px solid black';
                         photoDiv.appendChild(cityImg);
                     }
@@ -221,13 +223,17 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     }
     function changeView(newView){
+        const cityInputView = document.querySelector(".city-input-view");
+        const cityInfoView = document.querySelector(".city-info-view");
         if (newView === 'search'){
-            document.querySelector(".city-input-view").style.display = 'block';
-            document.querySelector(".city-info-view").style.display = "none";
+            cityInputView.style.display = 'block';
+            cityInfoView.style.display = "none";
+            cityInfoView.style.backgroundImage = `url('./images/background-images/bg${imageIndex}.jpg')`;
         }
         else if (newView === 'city-info'){
-            document.querySelector(".city-input-view").style.display = 'none';
-            document.querySelector(".city-info-view").style.display = "block";
+            cityInputView.style.display = 'none';
+            cityInfoView.style.display = "block";
+            cityInfoView.style.backgroundImage = "none";
         }
         else{
             console.log("The view paramater passed is not supported yet");
@@ -271,20 +277,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Finds and retrieves the emoji (flag) of the given country
     function getCountryEmoji(countryName){
         return (countryEmojis.get(countryName));
-    }
-    // ================================== PLACES API ============================================
-
-    function createPhotoMarker(place) {
-        const photos = place.photos;
-        if (!photos) {
-            return;
-        }
-        const marker = new google.maps.Marker({
-            map: map,
-            position: place.geometry.location,
-            title: place.name,
-            icon: photos[0].getUrl({maxWidth: 35, maxHeight: 35})
-        });
     }
     
 });
