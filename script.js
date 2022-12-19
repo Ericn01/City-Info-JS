@@ -84,7 +84,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         const timeAtLocation = calculateTimeAtLocation(weatherData.timezone);
         document.querySelector(".current-time").textContent = `Date: ${timeAtLocation}`;
         // Displays the city basic information 
-        displayMainCityInfo(inputCity.city, inputCity.country, inputCity.population);
+        displayMainCityInfo(inputCity.city, inputCity.country, inputCity.population, weatherData);
+        // Wikipedia data about the city
+        getCityWikiPage(inputCity.city);
         // Make the weather chart
         const wData = getWeatherChartData(weatherData.daily); // min, max, avg data  
         makeWeatherChart(wData.minTemp, wData.maxTemp, wData.dayTemp);
@@ -99,9 +101,13 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         return {"minTemp": min, "maxTemp": max, "dayTemp": day};
     }
-    function displayMainCityInfo(name, country, population){
+    function displayMainCityInfo(name, country, population, weatherObj){
+        const sunriseTime = new Date(weatherObj.current.sunrise * 1000);
+        const sunsetTime = new Date(weatherObj.current.sunset * 1000);
         cityNameCountryContainer.textContent = name + ", " + country + " " + getCountryEmoji(country);
         cityPopulationContainer.textContent = "Population of " + formatPopulationValue(population);
+        document.querySelector(".sunrise-time").textContent += String(sunriseTime).substring(4, 24);
+        document.querySelector(".sunset-time").textContent += String(sunsetTime).substring(4,24);
     }
     /* Determines how zoomed in the city map should be based on the population. Very accurate for most NA cities, less so for EU cities (heavy density) */
     function getMapZoomLevelFromPopulation(population){
@@ -163,13 +169,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         return weatherData;
     }
     /* Generates the markup for the weather data we want to display */
-    function makeRelevantWeatherDataMarkup(weatherObj){
-        const sunriseTime = new Date(weatherObj.current.sunrise * 1000);
-        const sunsetTime = new Date(weatherObj.current.sunset * 1000);
+    function makeRelevantWeatherDataMarkup(weatherObj){ 
         console.log(weatherObj);
         document.querySelectorAll(".weather-info div").forEach( (info) => info.textContent = ""); // Clears the text content of each node.
-        document.querySelector(".sunrise-time").textContent += String(sunriseTime).substring(4, 24);
-        document.querySelector(".sunset-time").textContent += String(sunsetTime).substring(4,24);
         document.querySelector(".humidity").textContent = "Humidity: " +weatherObj.current.humidity + "%";
         document.querySelector(".weather-description").textContent = "Forecast: " + weatherObj.current.weather[0].description;
         document.querySelector(".wind-speed").textContent = "Wind Speed: " + weatherObj.current.wind_speed + "km/h";
@@ -177,7 +179,15 @@ document.addEventListener("DOMContentLoaded", async () => {
                                                                         Feels like ${convertKelvinToUnit('celcius', weatherObj.current.feels_like)}°C / ${convertKelvinToUnit('fahrenheit', weatherObj.current.feels_like)}°F`;
     }
     function calculateTimeAtLocation(locationTimezone){
-        const dateAndTimeAtArea = new Date().toLocaleString("en-us", {timeZone: locationTimezone, hour12: "true"});
+        const formatOptions = {
+            timezone: locationTimezone,
+            weekday: "long",
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+            hour12: true
+        };
+        const dateAndTimeAtArea = new Date().toLocaleString("en-us", {formatOptions});
         return dateAndTimeAtArea; // Returns the current time at the location
     } 
     function initializeMap(latitude, longitude, population, cityCountry){
@@ -211,8 +221,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                         const cityImg = document.createElement("img");
                         cityImg.setAttribute("src", result.photos[0].getUrl());
                         cityImg.setAttribute("alt", 'City Image');
-                        cityImg.style.width = '450px';
-                        cityImg.style.border = '2px solid black';
+                        cityImg.setAttribute("id", "cityImg")
                         photoDiv.appendChild(cityImg);
                     }
                 }
@@ -240,18 +249,17 @@ document.addEventListener("DOMContentLoaded", async () => {
         const cityInfoView = document.querySelector(".city-info-view");
         if (newView === 'search'){
             cityInputView.style.display = 'block';
-            cityInfoView.style.display = "none";
-            cityInfoView.style.backgroundImage = `url('./images/background-images/bg${imageIndex}.jpg')`;
+            cityInfoView.classList.toggle("city-info-view");            
         }
         else if (newView === 'city-info'){
             cityInputView.style.display = 'none';
-            cityInfoView.style.display = "block";
-            cityInfoView.style.backgroundImage = "none";
+            cityInfoView.classList.toggle("city-info-view-visible")
         }
         else{
             console.log("The view paramater passed is not supported yet");
         }
     }
+
     /* Autocompletes the title options after the user types in a certain amount of characters*/
     function autocompleteCityInput(){
         const datalistReference = this.list; // References the datalist element associated with the input
@@ -291,11 +299,20 @@ document.addEventListener("DOMContentLoaded", async () => {
     function getCountryEmoji(countryName){
         return (countryEmojis.get(countryName));
     }
+    // Fetching from the wikiepedia API to receive data about the city
+    function getCityWikiPage(cityCountryPair){
+        const url = `https://en.wikipedia.org/w/api.php?action=parse&page=${cityCountryPair}&format=json`; // Specifying the url to fetch from
+        const wikiPage = fetchEndpointData(url).then(res => res);
+        console.log(wikiPage);
+    }
     // ==================================== WEATHER CHART ============================
     function makeWeatherChart(minData, maxData, dayData){
         console.log(minData, maxData, dayData);
         const context = document.querySelector("#weather-chart").getContext('2d');
-        const labels = ['Monday, Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday', 'Lol']
+        const labels = getWeekdaysFormattted(); // Returns an array of days in the format: M D
+        const options = {
+
+        }
         const data = {
             labels: labels,
             datasets: [{
@@ -320,5 +337,16 @@ document.addEventListener("DOMContentLoaded", async () => {
         };
         const chartConfig = {type: 'line', data:data};
         new Chart(context, chartConfig); // create and display the chart
+    }
+    function getWeekdaysFormattted(){
+        const week = [];
+        const DAYS_IN_WEEK = 7;
+        for (let i = 0; i < DAYS_IN_WEEK; i++){
+            const dateObject = new Date();
+            const date = dateObject.getDay()
+            const monthFormatted = new Intl.DateTimeFormat("en-us", {month: "long"}).format(dateObject);
+            week.push(monthFormatted + date);
+        }
+        return week;
     }
 });

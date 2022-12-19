@@ -27,20 +27,29 @@
             <h1 class="city-data name-country"> </h1>
             <h3 class="city-data population"></h3>
             <div class="city-data current-time"></div>
+            <div class="sunrise-container">
+                <img id="#sunrise-img" src="./images/weather-assets/sunrise.png"> <h3 class="sunrise-time"> </h3>
+            </div>
+            <div class="sunset-container">
+                <img id="#sunset-img" src="./images/weather-assets/sunset.png"> <h3 class="sunset-time"> </h3>
+            </div>
             <div class="city-data"></div>
         </div>
-        <div class="city-img" id="google-maps-city-photo">
+        <div class="image-container">
             <h2> City Image </h2>
+            <div class="city-img" id="google-maps-city-photo"></div>
         </div>
         <div class="weather-info"> 
             <h2> Weather Info </h2>
-            <div class="current-temperature"> </div>
-            <img id="#sunrise-img" src="./images/weather-assets/sunrise.png"> <div class="sunrise-time"> </div>
-            <img id="#sunset-img" src="./images/weather-assets/sunset.png"> <div class="sunset-time"> </div>
-            <div class="humidity"></div>
-            <div class="wind-speed"></div>
-            <div class="weather-description"> </div>
-
+            <h3 class="current-temperature"> </h3>
+            <h3 class="feels-like-temperature"></h3>
+            <h3 class="humidity"></h3>
+            <h3 class="wind-speed"></h3>
+            <h3 class="weather-description"> </h3>
+        </div>
+        <div class="weather-chart-container"> 
+            <h2> Weekly Temperature Forecast </h2>
+            <canvas id="weather-chart"></canvas>
         </div>
         <div class="weather-forecast">
 
@@ -48,9 +57,6 @@
         <div class="city-map">
             <h1> City Map: </h1>
             <div id="map"></div>
-        </div>
-        <div class="weather-chart-container"> 
-            <canvas id="weather-chart"></canvas>
         </div>
     </section>
 </body>
