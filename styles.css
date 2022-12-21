@@ -1,12 +1,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Lora&display=swap');
 body{
     margin: 2rem 5rem;
-    height: 100vh;
     background-size: cover;
+    background-repeat: no-repeat;
     background-color: whitesmoke;
     font-family: 'Lora', serif;
     color: white;
-    text-shadow: 1px 1px 2px rgba(0,0,0, 0.25);
+    text-shadow: 1px 1px 2px rgba(0,0,0, 0.3);
 }
 h1{
     font-size: 3.5rem;
@@ -21,14 +21,8 @@ h3{
 }
 .city-input-view{
     text-align: center;
-    width: 50%;
-    min-width: 350px;
-    height: 15%;
-    position: relative;
-    top: 50%;
-    left: 50%;
-    margin-left: -22.5%;
-    margin-top: -7.5%;
+    height: 100%;
+    margin: 18.5% auto;
 }
 .weather-info{
     margin-left: 50px;
@@ -81,24 +75,20 @@ button:hover{
     background: linear-gradient(#2C5364, #203A43, #0F2027); 
     grid-template-columns: repeat(2, minmax(0,1fr))
 }
-.image-container{
-    text-align: center;
-}
+
 #map{
-    width: 600px;
-    height: 375px;
-    min-width: 400px;
-    text-align: center;
+    height: auto;
+    min-height: 300px;
+    min-width: 325px;
     border-radius: 20px;
     border: 2px solid black;
 }
 #cityImg{
-    height: 80%;
-    max-height: 400px;
-    max-width: 500px;
-    border-radius: 15px;
-    border: 2px solid black;
-    max-width: 700px;
+    width: 100%;
+    height: auto;
+    max-height: 450px;
+    border-radius: 30px;
+    border: 2.5px solid black;
 }
 .info-heading{
     align-self: start;
@@ -123,4 +113,12 @@ button:hover{
     margin-left: 32px;
     font-size: 1.9rem;
     font-weight: bold;
+}
+
+
+@media only screen and (max-width: 1300px){
+    
+    #city-img{
+        max-width: 350px;
+    }
 }
