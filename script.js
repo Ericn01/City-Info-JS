@@ -11,8 +11,8 @@ async function fetchEndpointData(endpoint){
 }
 // A map (k,v) pairs that contains the name of a country, and its associated flag, for every country in the file (and a few more)
 // This is a modified (simplified) version of the data from https://github.com/risan/country-flag-emoji/blob/master/src/data.js
-const countryEmojis = new Map([ ["United Arab Emirates","🇦🇪"],["Afghanistan","🇦🇫"],["Albania","🇦🇱"],["Armenia","🇦🇲"],["Angola","🇦🇴"],["Argentina","🇦🇷"],["Austria","🇦🇹"],["Australia","🇦🇺"],["Aruba","🇦🇼"],["Azerbaijan","🇦🇿"],["Bosnia & Herzegovina","🇧🇦"],["Barbados","🇧🇧"],["Bangladesh","🇧🇩"],["Belgium","🇧🇪"],["Burkina Faso","🇧🇫"],["Bulgaria","🇧🇬"],["Bahrain","🇧🇭"],["Burundi","🇧🇮"],["Benin","🇧🇯"],["Bermuda","🇧🇲"],["Brunei","🇧🇳"],["Bolivia","🇧🇴"],["Brazil","🇧🇷"],["The Bahamas","🇧🇸"],["Bhutan","🇧🇹"],["Bouvet Island","🇧🇻"],["Botswana","🇧🇼"],["Belarus","🇧🇾"],["Belize","🇧🇿"],["Canada","🇨🇦"],["Congo (Kinshasa)","🇨🇩"],["Central African Republic","🇨🇫"],["Congo - Brazzaville","🇨🇬"],["Switzerland","🇨🇭"],["Côte d'Ivoire","🇨🇮"],["Cook Islands","🇨🇰"],["Chile","🇨🇱"],["Cameroon","🇨🇲"],["China","🇨🇳"],["Colombia","🇨🇴"],["Clipperton Island","🇨🇵"],["Costa Rica","🇨🇷"],["Cuba","🇨🇺"],["Cape Verde","🇨🇻"],["Curaçao","🇨🇼"],["Christmas Island","🇨🇽"],["Cyprus","🇨🇾"],["Czechia","🇨🇿"],["Germany","🇩🇪"],["Diego Garcia","🇩🇬"],["Djibouti","🇩🇯"],["Denmark","🇩🇰"],["Dominica","🇩🇲"],["Dominican Republic","🇩🇴"],["Algeria","🇩🇿"],["Ceuta & Melilla","🇪🇦"],["Ecuador","🇪🇨"],["Estonia","🇪🇪"],["Egypt","🇪🇬"],["Western Sahara","🇪🇭"],["Eritrea","🇪🇷"],["Spain","🇪🇸"],["Ethiopia","🇪🇹"],["European Union","🇪🇺"],["Finland","🇫🇮"],["Fiji","🇫🇯"],["Falkland Islands","🇫🇰"],["Micronesia","🇫🇲"],["Faroe Islands","🇫🇴"],["France","🇫🇷"],["Gabon","🇬🇦"],["United Kingdom","🇬🇧"],["Grenada","🇬🇩"],["Georgia","🇬🇪"],["French Guiana","🇬🇫"],["Guernsey","🇬🇬"],["Ghana","🇬🇭"],["Gibraltar","🇬🇮"],["Greenland","🇬🇱"],["Gambia","🇬🇲"],["Guinea","🇬🇳"],["Guadeloupe","🇬🇵"],["Equatorial Guinea","🇬🇶"],["Greece","🇬🇷"],["Guatemala","🇬🇹"],["Guam","🇬🇺"],["Guinea-Bissau","🇬🇼"],["Guyana","🇬🇾"],["Hong Kong SAR China","🇭🇰"],["Heard & McDonald Islands","🇭🇲"],["Honduras","🇭🇳"],["Croatia","🇭🇷"],["Haiti","🇭🇹"],["Hungary","🇭🇺"],["Canary Islands","🇮🇨"],["Indonesia","🇮🇩"],["Ireland","🇮🇪"],["Israel","🇮🇱"],["Isle of Man","🇮🇲"],["India","🇮🇳"],["Iraq","🇮🇶"],["Iran","🇮🇷"],["Iceland","🇮🇸"],["Italy","🇮🇹"],["Jersey","🇯🇪"],["Jamaica","🇯🇲"],["Jordan","🇯🇴"],["Japan","🇯🇵"],["Kenya","🇰🇪"],["Kyrgyzstan","🇰🇬"],["Samoa","🇼🇸"],["Kosovo","🇽🇰"],["Yemen","🇾🇪"],["Mayotte","🇾🇹"],
-                    ["Cambodia","🇰🇭"],["Kiribati","🇰🇮"],["Comoros","🇰🇲"],["North Korea","🇰🇵"],["South Korea","🇰🇷"],["Kuwait","🇰🇼"],["Cayman Islands","🇰🇾"],["Kazakhstan","🇰🇿"],["Laos","🇱🇦"],["Lebanon","🇱🇧"],["St. Lucia","🇱🇨"],["Liechtenstein","🇱🇮"],["Sri Lanka","🇱🇰"],["Liberia","🇱🇷"],["Lesotho","🇱🇸"],["Lithuania","🇱🇹"],["Luxembourg","🇱🇺"],["Latvia","🇱🇻"],["Libya","🇱🇾"],["Morocco","🇲🇦"],["Monaco","🇲🇨"],["Moldova","🇲🇩"],["Montenegro","🇲🇪"],["Madagascar","🇲🇬"],["Marshall Islands","🇲🇭"],["Macedonia","🇲🇰"],["Mali","🇲🇱"],["Myanmar","🇲🇲"],["Mongolia","🇲🇳"],["Macau SAR China","🇲🇴"],["Northern Mariana Islands","🇲🇵"],["Martinique","🇲🇶"],["Mauritania","🇲🇷"],["Montserrat","🇲🇸"],["Malta","🇲🇹"],["Mauritius","🇲🇺"],["Maldives","🇲🇻"],["Malawi","🇲🇼"],["Mexico","🇲🇽"],["Malaysia","🇲🇾"],["Mozambique","🇲🇿"],["Namibia","🇳🇦"],["New Caledonia","🇳🇨"],["Niger","🇳🇪"],["Norfolk Island","🇳🇫"],["Nigeria","🇳🇬"],["Nicaragua","🇳🇮"],["Netherlands","🇳🇱"],["Norway","🇳🇴"],["Nepal","🇳🇵"],["Nauru","🇳🇷"],["Niue","🇳🇺"],["New Zealand","🇳🇿"],["Oman","🇴🇲"],["Panama","🇵🇦"],["Peru","🇵🇪"],["French Polynesia","🇵🇫"],["Papua New Guinea","🇵🇬"],["Philippines","🇵🇭"],["Pakistan","🇵🇰"],["Poland","🇵🇱"],["Puerto Rico","🇵🇷"],["Portugal","🇵🇹"],["Paraguay","🇵🇾"],["Qatar","🇶🇦"],["Reunion","🇷🇪"],["Romania","🇷🇴"],["Serbia","🇷🇸"],["Russia","🇷🇺"],["Rwanda","🇷🇼"],["Saudi Arabia","🇸🇦"],["Solomon Islands","🇸🇧"],["Seychelles","🇸🇨"],["Sudan","🇸🇩"],["Sweden","🇸🇪"],["Singapore","🇸🇬"],["Slovenia","🇸🇮"],["Slovakia","🇸🇰"],["Sierra Leone","🇸🇱"],["San Marino","🇸🇲"],["Senegal","🇸🇳"],["Somalia","🇸🇴"],["Suriname","🇸🇷"],["South Sudan","🇸🇸"],["El Salvador","🇸🇻"],["Syria","🇸🇾"],["Swaziland","🇸🇿"],["Tristan da Cunha","🇹🇦"],["Turks & Caicos Islands","🇹🇨"],["Chad","🇹🇩"],["French Southern Territories","🇹🇫"],["Togo","🇹🇬"],["Thailand","🇹🇭"],["Tajikistan","🇹🇯"],["Timor-Leste","🇹🇱"],["Turkmenistan","🇹🇲"],["Tunisia","🇹🇳"],["Tonga","🇹🇴"],["Turkey","🇹🇷"],["Trinidad & Tobago","🇹🇹"],["Taiwan","🇹🇼"],["Tanzania","🇹🇿"],["Ukraine","🇺🇦"],["Uganda","🇺🇬"],["United States","🇺🇸"],["Uruguay","🇺🇾"],["Uzbekistan","🇺🇿"],["St. Vincent & Grenadines","🇻🇨"],["Venezuela","🇻🇪"],["Vietnam","🇻🇳"],["Vanuatu","🇻🇺"],["South Africa","🇿🇦"],["Zambia","🇿🇲"],["Zimbabwe","🇿🇼"] ]);
+const countryEmojis = new Map([ ["United Arab Emirates","🇦🇪"],["Afghanistan","🇦🇫"],["Albania","🇦🇱"],["Armenia","🇦🇲"],["Angola","🇦🇴"],["Argentina","🇦🇷"],["Austria","🇦🇹"],["Australia","🇦🇺"],["Aruba","🇦🇼"],["Azerbaijan","🇦🇿"],["Bosnia & Herzegovina","🇧🇦"],["Barbados","🇧🇧"],["Bangladesh","🇧🇩"],["Belgium","🇧🇪"],["Burkina Faso","🇧🇫"],["Bulgaria","🇧🇬"],["Bahrain","🇧🇭"],["Burundi","🇧🇮"],["Benin","🇧🇯"],["Bermuda","🇧🇲"],["Brunei","🇧🇳"],["Bolivia","🇧🇴"],["Brazil","🇧🇷"],["The Bahamas","🇧🇸"],["Bhutan","🇧🇹"],["Bouvet Island","🇧🇻"],["Botswana","🇧🇼"],["Belarus","🇧🇾"],["Belize","🇧🇿"],["Canada","🇨🇦"],["Congo (Kinshasa)","🇨🇩"],["Central African Republic","🇨🇫"],["Congo - Brazzaville","🇨🇬"],["Switzerland","🇨🇭"],["Côte d'Ivoire","🇨🇮"],["Cook Islands","🇨🇰"],["Chile","🇨🇱"],["Cameroon","🇨🇲"],["China","🇨🇳"],["Colombia","🇨🇴"],["Clipperton Island","🇨🇵"],["Costa Rica","🇨🇷"],["Cuba","🇨🇺"],["Cape Verde","🇨🇻"],["Curaçao","🇨🇼"],["Christmas Island","🇨🇽"],["Cyprus","🇨🇾"],["Czechia","🇨🇿"],["Germany","🇩🇪"],["Diego Garcia","🇩🇬"],["Djibouti","🇩🇯"],["Denmark","🇩🇰"],["Dominica","🇩🇲"],["Dominican Republic","🇩🇴"],["Algeria","🇩🇿"],["Ceuta & Melilla","🇪🇦"],["Ecuador","🇪🇨"],["Estonia","🇪🇪"],["Egypt","🇪🇬"],["Western Sahara","🇪🇭"],["Eritrea","🇪🇷"],["Spain","🇪🇸"],["Ethiopia","🇪🇹"],["European Union","🇪🇺"],["Finland","🇫🇮"],["Fiji","🇫🇯"],["Falkland Islands","🇫🇰"],["Micronesia","🇫🇲"],["Faroe Islands","🇫🇴"],["France","🇫🇷"],["Gabon","🇬🇦"],["United Kingdom","🇬🇧"],["Grenada","🇬🇩"],["Georgia","🇬🇪"],["French Guiana","🇬🇫"],["Guernsey","🇬🇬"],["Ghana","🇬🇭"],["Gibraltar","🇬🇮"],["Greenland","🇬🇱"],["Gambia","🇬🇲"],["Guinea","🇬🇳"],["Guadeloupe","🇬🇵"],["Equatorial Guinea","🇬🇶"],["Greece","🇬🇷"],["Guatemala","🇬🇹"],["Guam","🇬🇺"],["Guinea-Bissau","🇬🇼"],["Guyana","🇬🇾"],["Hong Kong SAR China","🇭🇰"],["Heard & McDonald Islands","🇭🇲"],["Honduras","🇭🇳"],["Croatia","🇭🇷"],["Haiti","🇭🇹"],["Hungary","🇭🇺"],["Canary Islands","🇮🇨"],["Indonesia","🇮🇩"],["Ireland","🇮🇪"],["Israel","🇮🇱"],["Isle of Man","🇮🇲"],["India","🇮🇳"],["Iraq","🇮🇶"],["Iran","🇮🇷"],["Iceland","🇮🇸"],["Italy","🇮🇹"],["Jersey","🇯🇪"],["Jamaica","🇯🇲"],["Jordan","🇯🇴"],["Japan","🇯🇵"],["Kenya","🇰🇪"],["Kyrgyzstan","🇰🇬"],["Samoa","🇼🇸"],["Kosovo","🇽🇰"],["Yemen","🇾🇪"],["Mayotte","🇾🇹"], 
+["Cambodia","🇰🇭"],["Kiribati","🇰🇮"],["Comoros","🇰🇲"],["North Korea","🇰🇵"],["South Korea","🇰🇷"],["Kuwait","🇰🇼"],["Cayman Islands","🇰🇾"],["Kazakhstan","🇰🇿"],["Laos","🇱🇦"],["Lebanon","🇱🇧"],["St. Lucia","🇱🇨"],["Liechtenstein","🇱🇮"],["Sri Lanka","🇱🇰"],["Liberia","🇱🇷"],["Lesotho","🇱🇸"],["Lithuania","🇱🇹"],["Luxembourg","🇱🇺"],["Latvia","🇱🇻"],["Libya","🇱🇾"],["Morocco","🇲🇦"],["Monaco","🇲🇨"],["Moldova","🇲🇩"],["Montenegro","🇲🇪"],["Madagascar","🇲🇬"],["Marshall Islands","🇲🇭"],["Macedonia","🇲🇰"],["Mali","🇲🇱"],["Myanmar","🇲🇲"],["Mongolia","🇲🇳"],["Macau SAR China","🇲🇴"],["Northern Mariana Islands","🇲🇵"],["Martinique","🇲🇶"],["Mauritania","🇲🇷"],["Montserrat","🇲🇸"],["Malta","🇲🇹"],["Mauritius","🇲🇺"],["Maldives","🇲🇻"],["Malawi","🇲🇼"],["Mexico","🇲🇽"],["Malaysia","🇲🇾"],["Mozambique","🇲🇿"],["Namibia","🇳🇦"],["New Caledonia","🇳🇨"],["Niger","🇳🇪"],["Norfolk Island","🇳🇫"],["Nigeria","🇳🇬"],["Nicaragua","🇳🇮"],["Netherlands","🇳🇱"],["Norway","🇳🇴"],["Nepal","🇳🇵"],["Nauru","🇳🇷"],["Niue","🇳🇺"],["New Zealand","🇳🇿"],["Oman","🇴🇲"],["Panama","🇵🇦"],["Peru","🇵🇪"],["French Polynesia","🇵🇫"],["Papua New Guinea","🇵🇬"],["Philippines","🇵🇭"],["Pakistan","🇵🇰"],["Poland","🇵🇱"],["Puerto Rico","🇵🇷"],["Portugal","🇵🇹"],["Paraguay","🇵🇾"],["Qatar","🇶🇦"],["Reunion","🇷🇪"],["Romania","🇷🇴"],["Serbia","🇷🇸"],["Russia","🇷🇺"],["Rwanda","🇷🇼"],["Saudi Arabia","🇸🇦"],["Solomon Islands","🇸🇧"],["Seychelles","🇸🇨"],["Sudan","🇸🇩"],["Sweden","🇸🇪"],["Singapore","🇸🇬"],["Slovenia","🇸🇮"],["Slovakia","🇸🇰"],["Sierra Leone","🇸🇱"],["San Marino","🇸🇲"],["Senegal","🇸🇳"],["Somalia","🇸🇴"],["Suriname","🇸🇷"],["South Sudan","🇸🇸"],["El Salvador","🇸🇻"],["Syria","🇸🇾"],["Swaziland","🇸🇿"],["Tristan da Cunha","🇹🇦"],["Turks & Caicos Islands","🇹🇨"],["Chad","🇹🇩"],["French Southern Territories","🇹🇫"],["Togo","🇹🇬"],["Thailand","🇹🇭"],["Tajikistan","🇹🇯"],["Timor-Leste","🇹🇱"],["Turkmenistan","🇹🇲"],["Tunisia","🇹🇳"],["Tonga","🇹🇴"],["Turkey","🇹🇷"],["Trinidad & Tobago","🇹🇹"],["Taiwan","🇹🇼"],["Tanzania","🇹🇿"],["Ukraine","🇺🇦"],["Uganda","🇺🇬"],["United States","🇺🇸"],["Uruguay","🇺🇾"],["Uzbekistan","🇺🇿"],["St. Vincent & Grenadines","🇻🇨"],["Venezuela","🇻🇪"],["Vietnam","🇻🇳"],["Vanuatu","🇻🇺"],["South Africa","🇿🇦"],["Zambia","🇿🇲"],["Zimbabwe","🇿🇼"] ]);
 
 document.addEventListener("DOMContentLoaded", async () => {
     // Select random background image 
@@ -22,6 +22,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Query Selectors for some of the data elements 
     const cityNameCountryContainer = document.querySelector(".name-country");
     const cityPopulationContainer = document.querySelector(".population");
+    // Search new city btn handling
+    document.querySelector("#search-new-city").addEventListener("click", () => {changeView("search")});
     // Retrieves the data to be presented for every city
     let cityData = JSON.parse(localStorage.getItem('cityData')) || "";
     if (cityData === ""){
@@ -86,7 +88,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         // Displays the city basic information 
         displayMainCityInfo(inputCity.city, inputCity.country, inputCity.population, weatherData);
         // Wikipedia data about the city
-        getCityWikiPage(inputCity.city);
+        document.querySelector(".wiki-data").textContent = await parseWikiData(getCityWikiPage(inputCity.city));
         // Make the weather chart
         const wData = getWeatherChartData(weatherData.daily); // min, max, avg data  
         makeWeatherChart(wData.minTemp, wData.maxTemp, wData.dayTemp);
@@ -175,8 +177,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         document.querySelector(".humidity").textContent = "Humidity: " +weatherObj.current.humidity + "%";
         document.querySelector(".weather-description").textContent = "Forecast: " + weatherObj.current.weather[0].description;
         document.querySelector(".wind-speed").textContent = "Wind Speed: " + weatherObj.current.wind_speed + "km/h";
-        document.querySelector(".current-temperature").textContent += `Currently ${convertKelvinToUnit('celcius', weatherObj.current.temp)}°C / ${convertKelvinToUnit('fahrenheit', weatherObj.current.temp)}°F |
-                                                                        Feels like ${convertKelvinToUnit('celcius', weatherObj.current.feels_like)}°C / ${convertKelvinToUnit('fahrenheit', weatherObj.current.feels_like)}°F`;
+        document.querySelector(".current-temperature").textContent += `Currently ${convertKelvinToUnit('celcius', weatherObj.current.temp)}°C / ${convertKelvinToUnit('fahrenheit', weatherObj.current.temp)}°F`;
+        document.querySelector(".feels-like-temperature").textContent += `Feels like ${convertKelvinToUnit('celcius', weatherObj.current.feels_like)}°C / ${convertKelvinToUnit('fahrenheit', weatherObj.current.feels_like)}°F`;
     }
     function calculateTimeAtLocation(locationTimezone){
         const formatOptions = {
@@ -300,14 +302,20 @@ document.addEventListener("DOMContentLoaded", async () => {
         return (countryEmojis.get(countryName));
     }
     // Fetching from the wikiepedia API to receive data about the city
-    function getCityWikiPage(cityCountryPair){
-        const url = `https://en.wikipedia.org/w/api.php?action=parse&page=${cityCountryPair}&format=json`; // Specifying the url to fetch from
-        const wikiPage = fetchEndpointData(url).then(res => res);
-        console.log(wikiPage);
+    async function getCityWikiPage(cityCountryPair){
+        const url = `https://en.wikipedia.org/w/api.php?action=parse&page=${cityCountryPair}&format=json&origin=*`; // Specifying the url to fetch from
+        const wikiPage = await fetchEndpointData(url).then(res => res);
+        return wikiPage;
+    }
+    async function parseWikiData(wikiData){
+        const pageData = await wikiData;
+        const pageHTMLText = pageData['parse']['text']['*'];
+        const parserObject = new DOMParser();
+        const paragraphAttribute = parserObject.parseFromString(pageHTMLText, 'text/html').querySelectorAll("p")[1].textContent;
+        return paragraphAttribute;
     }
     // ==================================== WEATHER CHART ============================
     function makeWeatherChart(minData, maxData, dayData){
-        console.log(minData, maxData, dayData);
         const context = document.querySelector("#weather-chart").getContext('2d');
         const labels = getWeekdaysFormattted(); // Returns an array of days in the format: M D
         const options = {
@@ -331,7 +339,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 label: 'Min Temperature',
                 data: minData,
                 fill: false,
-                tension: 0.1
+                tension: 0.1  
             }
             ]
         };
@@ -348,5 +356,8 @@ document.addEventListener("DOMContentLoaded", async () => {
             week.push(monthFormatted + date);
         }
         return week;
+    }
+    function wikipediaEdgeCaseQueries(cityCountry){
+
     }
 });

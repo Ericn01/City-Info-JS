@@ -19,14 +19,16 @@
         <h2> Lookup a City to Start! </h2>
         <input type="text" id="city-input" placeholder="Enter City Name!" list="location-data-list" autocomplete="off">
         <datalist id="location-data-list"> </datalist>
-        <button id="city-submit-btn"> Locate 🔎 </button>
+        <button id="city-submit-btn" value="city-info"> Locate 🔎 </button>
         <div class="city-not-found"> </div>
     </section>
     <section class="city-info-view">
+        <h1 class="city-data name-country"> </h1>
+        <button id="search-new-city" value="search"> Search New City </button>
         <div class="city-specific-info"> 
-            <h1 class="city-data name-country"> </h1>
+            <h3 class="wiki-data"></h3>
             <h3 class="city-data population"></h3>
-            <div class="city-data current-time"></div>
+            <h3 class="city-data current-time"></h3>
             <div class="sunrise-container">
                 <img id="#sunrise-img" src="./images/weather-assets/sunrise.png"> <h3 class="sunrise-time"> </h3>
             </div>
