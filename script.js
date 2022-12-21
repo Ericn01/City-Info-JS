@@ -23,7 +23,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const cityNameCountryContainer = document.querySelector(".name-country");
     const cityPopulationContainer = document.querySelector(".population");
     // Search new city btn handling
-    document.querySelector("#search-new-city").addEventListener("click", () => {changeView("search")});
+    // document.querySelector("#search-new-city").addEventListener("click", () => {changeView("search")});
     // Retrieves the data to be presented for every city
     let cityData = JSON.parse(localStorage.getItem('cityData')) || "";
     if (cityData === ""){

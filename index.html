@@ -27,25 +27,21 @@
             <h1 class="city-data name-country"> </h1>
             <h2 class="city-data current-time"></h2>
         </div>
-        <button id="search-new-city" value="search"> Search New City </button>
+        <div class="image-container">
+            <div class="city-img" id="google-maps-city-photo"></div>
+        </div>
         <div class="city-description"> 
             <h2> Short Description </h2>
             <h3 class="wiki-data"></h3>
             <h3 class="city-data population"></h3>
-            <span class="sunrise-container">
+            <div class="sunrise-sunset-container">
                 <img id="#sunrise-img" src="./images/weather-assets/sunrise.png" width="26px"> 
-                <h3 class="sunrise-time"> </h3>
-            </span>
-            <span class="sunset-container">
-                <img id="#sunset-img" src="./images/weather-assets/sunset.png" width="26px"> <h3 class="sunset-time"> </h3>
-            </span>
-        </div>
-        <div class="image-container">
-            <h2> Image of The City  </h2>
-            <div class="city-img" id="google-maps-city-photo"></div>
+                <span class="sunrise-time"> </span>
+                <img id="#sunset-img" src="./images/weather-assets/sunset.png" width="26px"> <span class="sunset-time"> </span>
+            </div>
         </div>
         <div class="city-map">
-            <h2> City Map: </h2>
+            <h2> City Map </h2>
             <div id="map"></div>
         </div>
         <div class="weather-info"> 
