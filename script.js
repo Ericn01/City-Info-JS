@@ -84,7 +84,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         makeRelevantWeatherDataMarkup(weatherData);
         // grab the time at the given location 
         const timeAtLocation = calculateTimeAtLocation(weatherData.timezone);
-        document.querySelector(".current-time").textContent = `Date: ${timeAtLocation}`;
+        document.querySelector(".current-time").textContent = timeAtLocation;
         // Displays the city basic information 
         displayMainCityInfo(inputCity.city, inputCity.country, inputCity.population, weatherData);
         // Wikipedia data about the city
@@ -106,10 +106,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     function displayMainCityInfo(name, country, population, weatherObj){
         const sunriseTime = new Date(weatherObj.current.sunrise * 1000);
         const sunsetTime = new Date(weatherObj.current.sunset * 1000);
+        const sunsetSunriseOptions = {hour:"numeric", minute:"numeric",second:"numeric"};
         cityNameCountryContainer.textContent = name + ", " + country + " " + getCountryEmoji(country);
-        cityPopulationContainer.textContent = "Population of " + formatPopulationValue(population);
-        document.querySelector(".sunrise-time").textContent += String(sunriseTime).substring(4, 24);
-        document.querySelector(".sunset-time").textContent += String(sunsetTime).substring(4,24);
+        cityPopulationContainer.textContent = `The ${name} metro area has a population of around ` + formatPopulationValue(population) + " people";
+        document.querySelector(".sunrise-time").textContent += "Sun rises at " + new Intl.DateTimeFormat('en-us', {sunsetSunriseOptions}).format(sunriseTime);
+        document.querySelector(".sunset-time").textContent += "Sun sets at " + new Intl.DateTimeFormat('en-us', {sunsetSunriseOptions}).format(sunsetTime);
     }
     /* Determines how zoomed in the city map should be based on the population. Very accurate for most NA cities, less so for EU cities (heavy density) */
     function getMapZoomLevelFromPopulation(population){
@@ -174,22 +175,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     function makeRelevantWeatherDataMarkup(weatherObj){ 
         console.log(weatherObj);
         document.querySelectorAll(".weather-info div").forEach( (info) => info.textContent = ""); // Clears the text content of each node.
-        document.querySelector(".humidity").textContent = "Humidity: " +weatherObj.current.humidity + "%";
-        document.querySelector(".weather-description").textContent = "Forecast: " + weatherObj.current.weather[0].description;
+        document.querySelector(".humidity").textContent = "The humidity at this location is " +weatherObj.current.humidity + "%";
+        document.querySelector(".weather-description").textContent = "At the moment, the forecast is " + weatherObj.current.weather[0].description;
         document.querySelector(".wind-speed").textContent = "Wind Speed: " + weatherObj.current.wind_speed + "km/h";
-        document.querySelector(".current-temperature").textContent += `Currently ${convertKelvinToUnit('celcius', weatherObj.current.temp)}°C / ${convertKelvinToUnit('fahrenheit', weatherObj.current.temp)}°F`;
+        document.querySelector(".current-temperature").textContent += `The current Temperature is ${convertKelvinToUnit('celcius', weatherObj.current.temp)}°C / ${convertKelvinToUnit('fahrenheit', weatherObj.current.temp)}°F`;
         document.querySelector(".feels-like-temperature").textContent += `Feels like ${convertKelvinToUnit('celcius', weatherObj.current.feels_like)}°C / ${convertKelvinToUnit('fahrenheit', weatherObj.current.feels_like)}°F`;
     }
     function calculateTimeAtLocation(locationTimezone){
-        const formatOptions = {
-            timezone: locationTimezone,
-            weekday: "long",
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-            hour12: true
-        };
-        const dateAndTimeAtArea = new Date().toLocaleString("en-us", {formatOptions});
+        const dateAndTimeAtArea = new Date().toLocaleString("en-us", {timeZone: locationTimezone, weekday:'long', year:'numeric', month:'long',day:'numeric',hour:'numeric',minute:'numeric',second:'numeric'});
         return dateAndTimeAtArea; // Returns the current time at the location
     } 
     function initializeMap(latitude, longitude, population, cityCountry){
@@ -211,7 +204,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         // Query parameters
         const queryParams = {
             query: cityCountry, 
-            fields: ['photos'],
+            fields: ['photos']
         };
         // Perform a search on the location and log out the results
         placeService.findPlaceFromQuery(queryParams, function(results, status){
@@ -312,14 +305,30 @@ document.addEventListener("DOMContentLoaded", async () => {
         const pageHTMLText = pageData['parse']['text']['*'];
         const parserObject = new DOMParser();
         const paragraphAttribute = parserObject.parseFromString(pageHTMLText, 'text/html').querySelectorAll("p")[1].textContent;
-        return paragraphAttribute;
+
+        return paragraphAttribute.replace(/[\[\(][\d\w]+[\)\]]/gm, '');
     }
     // ==================================== WEATHER CHART ============================
     function makeWeatherChart(minData, maxData, dayData){
         const context = document.querySelector("#weather-chart").getContext('2d');
         const labels = getWeekdaysFormattted(); // Returns an array of days in the format: M D
-        const options = {
-
+        const chartOptions = {
+            scales : {
+                y: {
+                    ticks: {
+                        color: "white"
+                    },
+                    title: {
+                        align: "center",
+                        color: "white"
+                    }
+                },
+                x: {
+                    ticks: {
+                        color: "white"
+                    }
+                }
+            }
         }
         const data = {
             labels: labels,
@@ -343,7 +352,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             }
             ]
         };
-        const chartConfig = {type: 'line', data:data};
+        const chartConfig = {type: 'line', data:data, options: chartOptions};
         new Chart(context, chartConfig); // create and display the chart
     }
     function getWeekdaysFormattted(){

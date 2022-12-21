@@ -23,26 +23,33 @@
         <div class="city-not-found"> </div>
     </section>
     <section class="city-info-view">
-        <h1 class="city-data name-country"> </h1>
+        <div class="info-heading">
+            <h1 class="city-data name-country"> </h1>
+            <h2 class="city-data current-time"></h2>
+        </div>
         <button id="search-new-city" value="search"> Search New City </button>
-        <div class="city-specific-info"> 
+        <div class="city-description"> 
+            <h2> Short Description </h2>
             <h3 class="wiki-data"></h3>
             <h3 class="city-data population"></h3>
-            <h3 class="city-data current-time"></h3>
-            <div class="sunrise-container">
-                <img id="#sunrise-img" src="./images/weather-assets/sunrise.png"> <h3 class="sunrise-time"> </h3>
-            </div>
-            <div class="sunset-container">
-                <img id="#sunset-img" src="./images/weather-assets/sunset.png"> <h3 class="sunset-time"> </h3>
-            </div>
-            <div class="city-data"></div>
+            <span class="sunrise-container">
+                <img id="#sunrise-img" src="./images/weather-assets/sunrise.png" width="26px"> 
+                <h3 class="sunrise-time"> </h3>
+            </span>
+            <span class="sunset-container">
+                <img id="#sunset-img" src="./images/weather-assets/sunset.png" width="26px"> <h3 class="sunset-time"> </h3>
+            </span>
         </div>
         <div class="image-container">
-            <h2> City Image </h2>
+            <h2> Image of The City  </h2>
             <div class="city-img" id="google-maps-city-photo"></div>
         </div>
+        <div class="city-map">
+            <h2> City Map: </h2>
+            <div id="map"></div>
+        </div>
         <div class="weather-info"> 
-            <h2> Weather Info </h2>
+            <h2> Weather Information </h2>
             <h3 class="current-temperature"> </h3>
             <h3 class="feels-like-temperature"></h3>
             <h3 class="humidity"></h3>
@@ -50,15 +57,11 @@
             <h3 class="weather-description"> </h3>
         </div>
         <div class="weather-chart-container"> 
-            <h2> Weekly Temperature Forecast </h2>
+            <h2> Week Temperature Forecast (°C) </h2>
             <canvas id="weather-chart"></canvas>
         </div>
         <div class="weather-forecast">
 
-        </div>
-        <div class="city-map">
-            <h1> City Map: </h1>
-            <div id="map"></div>
         </div>
     </section>
 </body>

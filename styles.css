@@ -13,10 +13,11 @@ h1{
     text-shadow: 1px 1px 1px black;
 }
 h2{
-    font-size: 2rem;
+    font-size: 1.8rem;
 }
 h3{
-    font-size: 1.35rem;
+    font-size: 1.2rem;
+    font-weight: normal;
 }
 .city-input-view{
     text-align: center;
@@ -32,8 +33,10 @@ h3{
 .city-info-view{
     background-color:rgba(0,0,0, 0.25);
     box-shadow: 2px 2px 10px black;
+    padding: 10px;
 }
 .city-info-view div{
+    align-self: center;
     padding: 15px;
 }
 input[type='text']{
@@ -70,20 +73,38 @@ button:hover{
 .city-info-view-visible{
     display: grid;
     gap: 20px;
+    border-radius: 20px;
+    background: linear-gradient(#2C5364, #203A43, #0F2027); 
     grid-template-columns: repeat(2, minmax(0,1fr))
 }
+.image-container{
+    text-align: center;
+}
 #map{
-    height: 450px;
-    width: 625px;
+    width: 650px;
+    height: 375px;
+    min-width: 400px;
+    text-align: center;
     border-radius: 20px;
+    border: 2px solid black;
 }
 #cityImg{
-    width: 70%;
+    height: 80%;
+    max-height: 400px;
+    max-width: 500px;
     border-radius: 15px;
     border: 2px solid black;
     max-width: 700px;
 }
+.city-description{
+    margin-left: 25px;
+}
 .name-country{
     text-align: left;
     margin: 10px 30px;
+}
+.current-time{
+    margin-left: 32px;
+    font-size: 1.9rem;
+    font-weight: bold;;
 }
