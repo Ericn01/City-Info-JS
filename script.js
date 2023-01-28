@@ -64,12 +64,12 @@ document.addEventListener("DOMContentLoaded", async () => {
             cityNotFoundError(userCityInput)
         }
     }
+    // The logic that is applied if a city could not be found.
     function cityNotFoundError(cityName){
         const cityNotFound = document.querySelector(".city-not-found");
         cityNotFound.innerHTML = ""; // Resets any error that was there previously 
         cityNotFound.textContent = `The city '${cityName}' could not be found. Please check your spelling, and try again.`
         cityInput.textContent = "";
-        loadCityInputPlaceholder(); // Load a new city placeholder
     }    
     async function cityInfoDisplay(inputCity){
         changeView("city-info"); // Switches the page view to display city information
@@ -87,12 +87,24 @@ document.addEventListener("DOMContentLoaded", async () => {
         document.querySelector(".current-time").textContent = timeAtLocation;
         // Displays the city basic information 
         displayMainCityInfo(inputCity.city, inputCity.country, inputCity.population, weatherData);
-        // Wikipedia data about the city
-        document.querySelector(".wiki-data").textContent = await parseWikiData(getCityWikiPage(inputCity.city));
+        // Wikipedia data fetching
+        await performWikiDataLogic(inputCity);
         // Make the weather chart
         const wData = getWeatherChartData(weatherData.daily); // min, max, avg data  
         makeWeatherChart(wData.minTemp, wData.maxTemp, wData.dayTemp);
     }
+
+    async function performWikiDataLogic(inputCity){
+        // Grab the wiki data container
+        const wikiContainer = document.querySelector(".wiki-data");
+        // The wikipedia search query 
+        let queryText = ""
+        // Logic for different type of search 
+        inputCity.population > 500000 ? queryText = inputCity.city : queryText = `${inputCity.city}, ${inputCity.country}`;
+        // let the text content be what we retrieved.
+        wikiContainer.textContent = await parseWikiData(getCityWikiPage(queryText));
+    }
+    
     function getWeatherChartData(weatherData){
         const min = [];const max = [];const day = [];
         weatherData.forEach( (entry) => {
@@ -109,8 +121,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         const sunsetSunriseOptions = {hour:"numeric", minute:"numeric",second:"numeric"};
         cityNameCountryContainer.textContent = name + ", " + country + " " + getCountryEmoji(country);
         cityPopulationContainer.textContent = `The ${name} metro area has a population of around ` + formatPopulationValue(population) + " people";
-        document.querySelector(".sunrise-time").textContent += "Sun rises at " + new Intl.DateTimeFormat('en-us', {sunsetSunriseOptions}).format(sunriseTime);
-        document.querySelector(".sunset-time").textContent += "Sun sets at " + new Intl.DateTimeFormat('en-us', {sunsetSunriseOptions}).format(sunsetTime);
+        document.querySelector("#sunrise-time").textContent += "Rises: " + new Intl.DateTimeFormat('en-us', sunsetSunriseOptions).format(sunriseTime);
+        document.querySelector("#sunset-time").textContent += "Sets: " + new Intl.DateTimeFormat('en-us', sunsetSunriseOptions).format(sunsetTime);
     }
     /* Determines how zoomed in the city map should be based on the population. Very accurate for most NA cities, less so for EU cities (heavy density) */
     function getMapZoomLevelFromPopulation(population){
@@ -192,10 +204,9 @@ document.addEventListener("DOMContentLoaded", async () => {
                 center: locationCenter,
                 zoom: getMapZoomLevelFromPopulation(population),
                 // These options make the map relatively static, as to only display the city that we're looking at.
-                draggable: false, 
-                zoomControl: false,
-                scrollwheel: false,
+                disableDefaultUI: true,
                 mapTypeId: "hybrid",
+                draggable: false,
         };
         // Create the map
         const map = new google.maps.Map(mapContainer, mapOptions);
@@ -225,19 +236,18 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
     function getSpecifiedCity(userCityInput){
         let userCity = "";
-        const inputArray = userCityInput.split(",");
-        const cityName = inputArray[0];
-        const countryName = inputArray[1].trim();
-        for (let city of cityData){
-            if (city.city.includes(cityName) && city.country.includes(countryName)){
-                userCity = city;
-                break;
+        const inputArray = userCityInput.includes(",") ? userCityInput.split(",") : "";
+        if (inputArray.length >= 2){
+            const cityName = inputArray[0];
+            const countryName = inputArray[1].trim();
+            for (let city of cityData){
+                if (city.city.includes(cityName) && city.country.includes(countryName)){
+                    userCity = city;
+                    break;
+                }
             }
         }
         return userCity;
-    }
-    function makeWindVectorArrow(magnitude, direction){
-
     }
     function changeView(newView){
         const cityInputView = document.querySelector(".city-input-view");
@@ -254,7 +264,6 @@ document.addEventListener("DOMContentLoaded", async () => {
             console.log("The view paramater passed is not supported yet");
         }
     }
-
     /* Autocompletes the title options after the user types in a certain amount of characters*/
     function autocompleteCityInput(){
         const datalistReference = this.list; // References the datalist element associated with the input
@@ -268,7 +277,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             }
         }
     }
-    /* Simple function that checks to see if the current user input string matches any of the song titles in the JSON file */
+    /* Simple function that checks to see if the current user input string matches any of the cities in the JSON file */
     function findMatches(currentInput, cityCountryObj){
         const matchArray = []
         const matches = cityCountryObj.filter((entry) => entry.location.toLowerCase().includes(currentInput.toLowerCase()));
@@ -280,10 +289,10 @@ document.addEventListener("DOMContentLoaded", async () => {
         let convertedUnit = 0;
         switch(unit){
             case "celcius": 
-                convertedUnit = Math.round(kelvins - 273.15,1);
+                convertedUnit = Math.round(kelvins - 273.15, 1);
                 break;
             case "fahrenheit":
-                convertedUnit = Math.round(1.80 * (kelvins - 273.15) + 32.0,1);
+                convertedUnit = Math.round(1.80 * (kelvins - 273.15) + 32.0, 1);
                 break;
             default:
                 console.log("invalid unit parameter passed");        
@@ -301,12 +310,12 @@ document.addEventListener("DOMContentLoaded", async () => {
         return wikiPage;
     }
     async function parseWikiData(wikiData){
+        console.log(wikiData);
         const pageData = await wikiData;
         const pageHTMLText = pageData['parse']['text']['*'];
         const parserObject = new DOMParser();
         const paragraphAttribute = parserObject.parseFromString(pageHTMLText, 'text/html').querySelectorAll("p")[1].textContent;
-
-        return paragraphAttribute.replace(/[\[\(][\d\w]+[\)\]]/gm, '');
+        return paragraphAttribute.replace(/[\[\(][\d\w]+[\)\]]/i, '');
     }
     // ==================================== WEATHER CHART ============================
     function makeWeatherChart(minData, maxData, dayData){
@@ -326,6 +335,13 @@ document.addEventListener("DOMContentLoaded", async () => {
                 x: {
                     ticks: {
                         color: "white"
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    title: {
+                        color: "white",
                     }
                 }
             }
@@ -369,4 +385,5 @@ document.addEventListener("DOMContentLoaded", async () => {
     function wikipediaEdgeCaseQueries(cityCountry){
 
     }
+
 });
