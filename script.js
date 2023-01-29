@@ -112,7 +112,6 @@ document.addEventListener("DOMContentLoaded", async () => {
             max.push(convertKelvinToUnit('celcius',entry.temp.max));
             day.push(convertKelvinToUnit('celcius',entry.temp.day));
         });
-
         return {"minTemp": min, "maxTemp": max, "dayTemp": day};
     }
     function displayMainCityInfo(name, country, population, weatherObj){
@@ -185,9 +184,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
     /* Generates the markup for the weather data we want to display */
     function makeRelevantWeatherDataMarkup(weatherObj){ 
-        console.log(weatherObj);
         document.querySelectorAll(".weather-info div").forEach( (info) => info.textContent = ""); // Clears the text content of each node.
-        document.querySelector(".humidity").textContent = "The humidity at this location is " +weatherObj.current.humidity + "%";
+        document.querySelector(".humidity").textContent = "The humidity at this location is " + weatherObj.current.humidity + "%";
         document.querySelector(".weather-description").textContent = "At the moment, the forecast is " + weatherObj.current.weather[0].description;
         document.querySelector(".wind-speed").textContent = "Wind Speed: " + weatherObj.current.wind_speed + "km/h";
         document.querySelector(".current-temperature").textContent += `The current Temperature is ${convertKelvinToUnit('celcius', weatherObj.current.temp)}°C / ${convertKelvinToUnit('fahrenheit', weatherObj.current.temp)}°F`;
@@ -234,6 +232,14 @@ document.addEventListener("DOMContentLoaded", async () => {
             }
         });
     }
+    // Setting up functionality for the switch view button
+    const switchViewBtn = document.querySelector("#switch-view-btn");
+    switchViewBtn.style.display = "none"; // Default for the button on the search page
+    switchViewBtn.addEventListener('click', () => {
+        switchViewBtn.style.display = "block";
+        document.querySelector(".city-info-view").style.display = "none";
+        document.querySelector(".city-input-view").style.display = "block";
+    })
     function getSpecifiedCity(userCityInput){
         let userCity = "";
         const inputArray = userCityInput.includes(",") ? userCityInput.split(",") : "";
@@ -315,7 +321,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         const pageHTMLText = pageData['parse']['text']['*'];
         const parserObject = new DOMParser();
         const paragraphAttribute = parserObject.parseFromString(pageHTMLText, 'text/html').querySelectorAll("p")[1].textContent;
-        return paragraphAttribute.replace(/[\[\(][\d\w]+[\)\]]/i, '');
+        return paragraphAttribute.replace(/\[\w+\]/gm, '');
     }
     // ==================================== WEATHER CHART ============================
     function makeWeatherChart(minData, maxData, dayData){

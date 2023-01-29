@@ -14,6 +14,9 @@
 <body>
     <!-- Input (text) -> {name of city}, {country} -> *SUBMIT* -> {fetch from JSON (City name, country, population, picture of city, lat/long)
     } -> retrieve LAT/LONG info -> fetch from weather API -> retrieve weather data. Display it! -->
+    <header> 
+        <button id="switch-view-btn"> Search a Different City </button>
+    </header>
     <section class="city-input-view">
         <h1> City Information Tool </h1>
         <h2> Lookup a City to Start! </h2>
@@ -51,11 +54,11 @@
         </div>
         <div class="weather-info"> 
             <h2> Weather Information </h2>
-            <h3 class="current-temperature"> </h3>
-            <h3 class="feels-like-temperature"></h3>
-            <h3 class="humidity"></h3>
-            <h3 class="wind-speed"></h3>
-            <h3 class="weather-description"> </h3>
+            <div class="current-temperature"> </div>
+            <div class="feels-like-temperature"> </div>
+            <div class="humidity"></div>
+            <div class="wind-speed"></div>
+            <div class="weather-description"> </div>
         </div>
         <div class="weather-chart-container"> 
             <h2> Week Temperature Forecast (°C) </h2>
