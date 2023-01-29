@@ -82,9 +82,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         // Receive and return the weather data for the given city
         const weatherData = await retrieveCityWeatherData(cityLatitude, cityLongitude).then(res => res);
         makeRelevantWeatherDataMarkup(weatherData);
-        // grab the time at the given location 
-        const timeAtLocation = calculateTimeAtLocation(weatherData.timezone);
-        document.querySelector(".current-time").textContent = timeAtLocation;
+        // grab the time at the given location and display it 
+        setInterval( () => displayTimeInformation(weatherData.timezone), 1000); // Increments the current time by one second 
         // Displays the city basic information 
         displayMainCityInfo(inputCity.city, inputCity.country, inputCity.population, weatherData);
         // Wikipedia data fetching
@@ -93,7 +92,20 @@ document.addEventListener("DOMContentLoaded", async () => {
         const wData = getWeatherChartData(weatherData.daily); // min, max, avg data  
         makeWeatherChart(wData.minTemp, wData.maxTemp, wData.dayTemp);
     }
-
+    /* Displays the time information for the specified timezone*/
+    function displayTimeInformation(timezone){
+        // Data point
+        const dateData = calculateTimeAtLocation(timezone).split("at");
+        // Strings to be displayed
+        const dateAtLocation = dateData[0];
+        const timeAtLocation = dateData[1];
+        // DOM elements
+        const currentDate = document.querySelector(".current-date");
+        const currentTime = document.querySelector(".current-time");
+        // Setting up the text content
+        currentDate.textContent = dateAtLocation;
+        currentTime.textContent = timeAtLocation;
+    }
     async function performWikiDataLogic(inputCity){
         // Grab the wiki data container
         const wikiContainer = document.querySelector(".wiki-data");
@@ -198,9 +210,10 @@ document.addEventListener("DOMContentLoaded", async () => {
         document.querySelector(".humidity").textContent = "The humidity at this location is " + weatherObj.current.humidity + "%";
         document.querySelector(".weather-description").textContent = "At the moment, the forecast is " + weatherObj.current.weather[0].description;
         document.querySelector(".wind-speed").textContent = "Wind Speed: " + weatherObj.current.wind_speed + "km/h";
-        document.querySelector("#currentTemp").textContent += `The current temperature is ${convertKelvinToUnit('celcius', weatherObj.current.temp)}°C / ${convertKelvinToUnit('fahrenheit', weatherObj.current.temp)}°F`;
+        document.querySelector("#currentTemp").textContent += `Currently ${convertKelvinToUnit('celcius', weatherObj.current.temp)}°C / ${convertKelvinToUnit('fahrenheit', weatherObj.current.temp)}°F`;
         document.querySelector("#feelsTemp").textContent += `Feels like ${convertKelvinToUnit('celcius', weatherObj.current.feels_like)}°C / ${convertKelvinToUnit('fahrenheit', weatherObj.current.feels_like)}°F`;
     }
+    // As the function name suggests, this function figures out the local time of the given location.
     function calculateTimeAtLocation(locationTimezone){
         const dateAndTimeAtArea = new Date().toLocaleString("en-us", {timeZone: locationTimezone, weekday:'long', year:'numeric', month:'long',day:'numeric',hour:'numeric',minute:'numeric',second:'numeric'});
         return dateAndTimeAtArea; // Returns the current time at the location
@@ -223,7 +236,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         // Query parameters
         const queryParams = {
             query: cityCountry, 
-            fields: ['photos']
+            fields: ['photos'],
         };
         // Perform a search on the location and log out the results
         placeService.findPlaceFromQuery(queryParams, function(results, status){
@@ -233,7 +246,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                         const photoDiv = document.querySelector("#google-maps-city-photo");
                         photoDiv.innerHTML = ""; // resets any previous images in there
                         const cityImg = document.createElement("img");
-                        cityImg.setAttribute("src", result.photos[0].getUrl());
+                        cityImg.setAttribute("src", result.photos[0].getUrl({maxHeight: 400}));
                         cityImg.setAttribute("alt", 'City Image');
                         cityImg.setAttribute("id", "cityImg")
                         photoDiv.appendChild(cityImg);
@@ -330,13 +343,16 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
     async function parseWikiData(wikiData){
         const pageData = await wikiData;
-        if (pageData !== undefined){
+        console.log(pageData);
+        if (!pageData['parse']['text']['*'].includes("NewPP limit report") || pageData !== undefined){
             const pageHTMLText = pageData['parse']['text']['*'];
             const parserObject = new DOMParser();
-            const paragraphAttribute = parserObject.parseFromString(pageHTMLText, 'text/html').querySelectorAll("p")[1].textContent;
+            const paragraphAttribute = parserObject.parseFromString(pageHTMLText, 'text/html').querySelectorAll("p")[1].textContent ?? 'Sorry, we were unable to retrieve a description of the inputted city...';
             return paragraphAttribute.replace(/\[\w+\]/gm, '');
         }
-        return 'Sorry, we were unable to retrieve a description of the inputted city...';
+        else {
+            console.log("The result of that page search was undefined...");
+        }
     }
     // ==================================== WEATHER CHART ============================
     function makeWeatherChart(minData, maxData, dayData){
@@ -395,19 +411,21 @@ document.addEventListener("DOMContentLoaded", async () => {
     function getWeekdaysFormattted(){
         const week = [];
         const DAYS_IN_WEEK = 7;
-        const monthToDays = new Map([ [1, 31], [2, 28], [3, 31], [4, 30], [5, 31], [6, 30], [7, 31], [8, 31], [9, 31], [10, 31], [11, 30], [12, 31] ]);
         const currentDate = new Date(); // Chart starts at today + 1
+        const currentMonth = currentDate.getMonth();
+        const monthNumToDays = new Map([ [0, 31], [1, 28], [2, 31], [3, 30], [4, 31], [5, 30], [6, 31], [7, 31], [8, 31], [9, 31], [10, 30], [11, 31] ]); // 0=jan, 1=feb, ...
         for (let i = 0; i < DAYS_IN_WEEK; i++){
             let date = currentDate.getDate() + i;
-            const numDaysInCurrentMonth = monthToDays.get(currentDate.getMonth());
-            console.log(numDaysInCurrentMonth);
+            const numDaysInCurrentMonth = monthNumToDays.get(currentMonth);
             if (date > numDaysInCurrentMonth){
-                currentDate.setMonth(currentDate.getMonth() + 1);
+                date = Math.abs(date - numDaysInCurrentMonth);
+                console.log(currentMonth + 1);
+                currentDate.setMonth(currentMonth + 1);
             }
-            console.log(currentDate.getMonth());
             const monthFormatted = new Intl.DateTimeFormat("en-us", {month: "long"}).format(currentDate);
             week.push(monthFormatted + " " + date);
         }
+        
         return week;
     }
     function wikipediaEdgeCaseQueries(userQuery){

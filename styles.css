@@ -30,7 +30,7 @@ h3{
     padding: 10px;
 }
 .city-info-view div{
-    align-self: center;
+    align-self: top;
     padding: 15px;
 }
 .city-not-found{
@@ -42,35 +42,38 @@ h3{
     display: grid;
     gap: 5px;
     margin-left: 25px;
+    font-size: 1.1rem;
     grid-template-columns: repeat(2, minmax(0, 1fr));
 }
-.weather-info div{
-    border: 1px solid black;
+.weather-info div, #sunrise, #sunset{
+    display: flex;
+    align-items: center;
 }
 .weather-info:first-child{
     grid-column: span 2;
     background: red;
 }
-input[type='text']{
-    padding: 10px;
+#city-input{
+    padding: 11.5px;
     color: black;
     box-shadow: 2px 2px 6px black;  
     border-radius: 8px;
     width:  75%;
-    max-width: 550px;
+    max-width: 600px;
     min-width: 250px;
     border: 0.8px solid purple;
 }
 button{
-    padding: 6px;
+    padding: 7.5px;
     background-color: lightcoral;
     border-radius: 10px;
     margin: 20px 5px;
+    margin-left: 15px;
     font-size: 15px;
     font-weight: bold;
     text-shadow: 1px 1px black;
     border: 1px solid black;
-    width: 100px;
+    width: 125px;
     min-width: 50px;
     color: white;
 }
@@ -78,6 +81,9 @@ button:hover{
     box-shadow: 2px 2px 10px black;
     background-color: coral;
     cursor: pointer;
+}
+#temp-input-one{
+    margin-left: 25px;
 }
 .city-info-view{
     display: none;
@@ -89,7 +95,7 @@ button:hover{
     row-gap: 3.5px;
     padding: 50px;
     background: linear-gradient(#2C5364, #203A43, #0F2027); 
-    grid-template-columns: 60% 40%;
+    grid-template-columns: 56% 44%;
 }
 
 #map{
@@ -124,14 +130,18 @@ button:hover{
     margin: 10px 30px;
 }
 #sunrise-time, #sunset-time{
-    font-size: 1.45rem;
+    font-size: 1.6rem;
     font-weight: 500;
     margin: 0px 15px;
     
 }
+#sunrise, #sunset{
+    display: flex;
+    align-items: center;
+}
 .sunrise-sunset-container{
     display: flex;
-    justify-content: start;
+    align-items: center;
 }
 #sunset{
     margin-left: 35px;
@@ -141,21 +151,38 @@ button:hover{
     padding: 8.5px;
     background-color: rgba(27, 12, 255, 1);
 }
-.current-time{
+.current-date{
     margin-left: 32px;
     font-size: 1.9rem;
     font-weight: bold;
 }
+.current-time{
+    font-size: 2rem;
+    font-weight: normal;
+    margin: 8px 0px 8px 20px;
+}
+.current-temperature{
+    list-style-type: none;
+}
+.current-temperature li{
 
+}
 #weather-chart{
     max-width: 650px;
 }
 
 .weather-info-heading{
     display: flex;
-    
+    text-align: center;
+    grid-column: span 2; 
 }
-
+.time-container{
+    display: flex;
+    margin-left: 32px;
+    justify-content: left;
+    align-items: center;
+    padding: 0px;
+}
 
 @media only screen and (max-width: 1200px){
     
