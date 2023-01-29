@@ -114,14 +114,15 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
         return {"minTemp": min, "maxTemp": max, "dayTemp": day};
     }
+
     function displayMainCityInfo(name, country, population, weatherObj){
         const sunriseTime = new Date(weatherObj.current.sunrise * 1000);
         const sunsetTime = new Date(weatherObj.current.sunset * 1000);
         const sunsetSunriseOptions = {hour:"numeric", minute:"numeric",second:"numeric"};
         cityNameCountryContainer.textContent = name + ", " + country + " " + getCountryEmoji(country);
-        cityPopulationContainer.textContent = `The ${name} metro area has a population of around ` + formatPopulationValue(population) + " people";
-        document.querySelector("#sunrise-time").textContent += "Rises: " + new Intl.DateTimeFormat('en-us', sunsetSunriseOptions).format(sunriseTime);
-        document.querySelector("#sunset-time").textContent += "Sets: " + new Intl.DateTimeFormat('en-us', sunsetSunriseOptions).format(sunsetTime);
+        cityPopulationContainer.textContent = `The ${name} metro area has a population of approximately ` + formatPopulationValue(population) + " people";
+        document.querySelector("#sunrise-time").textContent = new Intl.DateTimeFormat('en-us', sunsetSunriseOptions).format(sunriseTime);
+        document.querySelector("#sunset-time").textContent = new Intl.DateTimeFormat('en-us', sunsetSunriseOptions).format(sunsetTime);
     }
     /* Determines how zoomed in the city map should be based on the population. Very accurate for most NA cities, less so for EU cities (heavy density) */
     function getMapZoomLevelFromPopulation(population){
@@ -129,9 +130,9 @@ document.addEventListener("DOMContentLoaded", async () => {
             return 13;
         }else if (population >= 75000 && population < 250000){ // small -medium cities
             return 12;
-        }else if (population >= 250000 && population < 10000000){ // medium size cities
+        }else if (population >= 250000 && population < 1000000){ // medium size cities
             return 11;
-        }else if (population >= 1000000 && population < 3000000){ // large cities 
+        }else if (population >= 1000000 && population < 3500000){ // large cities 
             return 10;
         }else{ // VERY large cities
             return 9;
@@ -182,14 +183,23 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
         return weatherData;
     }
+    // Temperature unit change logic
+    const temperatureInputs = document.querySelectorAll(".temp-unit");
+    temperatureInputs.forEach( (input) => input.addEventListener('click', useUnit));
+
+    function useUnit (kelvinTemp) {
+        const selectedUnit = this.value;
+        let tempString = ""  
+        selectedUnit === "celcius" ? tempString = `${convertKelvinToUnit('celcius', kelvinTemp)}°C` : tempString = `${convertKelvinToUnit('fahrenheit', kelvinTemp)}°F`;
+        return tempString;
+    }
     /* Generates the markup for the weather data we want to display */
     function makeRelevantWeatherDataMarkup(weatherObj){ 
-        document.querySelectorAll(".weather-info div").forEach( (info) => info.textContent = ""); // Clears the text content of each node.
         document.querySelector(".humidity").textContent = "The humidity at this location is " + weatherObj.current.humidity + "%";
         document.querySelector(".weather-description").textContent = "At the moment, the forecast is " + weatherObj.current.weather[0].description;
         document.querySelector(".wind-speed").textContent = "Wind Speed: " + weatherObj.current.wind_speed + "km/h";
-        document.querySelector(".current-temperature").textContent += `The current Temperature is ${convertKelvinToUnit('celcius', weatherObj.current.temp)}°C / ${convertKelvinToUnit('fahrenheit', weatherObj.current.temp)}°F`;
-        document.querySelector(".feels-like-temperature").textContent += `Feels like ${convertKelvinToUnit('celcius', weatherObj.current.feels_like)}°C / ${convertKelvinToUnit('fahrenheit', weatherObj.current.feels_like)}°F`;
+        document.querySelector("#currentTemp").textContent += `The current temperature is ${convertKelvinToUnit('celcius', weatherObj.current.temp)}°C / ${convertKelvinToUnit('fahrenheit', weatherObj.current.temp)}°F`;
+        document.querySelector("#feelsTemp").textContent += `Feels like ${convertKelvinToUnit('celcius', weatherObj.current.feels_like)}°C / ${convertKelvinToUnit('fahrenheit', weatherObj.current.feels_like)}°F`;
     }
     function calculateTimeAtLocation(locationTimezone){
         const dateAndTimeAtArea = new Date().toLocaleString("en-us", {timeZone: locationTimezone, weekday:'long', year:'numeric', month:'long',day:'numeric',hour:'numeric',minute:'numeric',second:'numeric'});
@@ -229,6 +239,9 @@ document.addEventListener("DOMContentLoaded", async () => {
                         photoDiv.appendChild(cityImg);
                     }
                 }
+            }
+            else{
+                console.log("No images of the specified location could be retrieved.")
             }
         });
     }
@@ -316,12 +329,14 @@ document.addEventListener("DOMContentLoaded", async () => {
         return wikiPage;
     }
     async function parseWikiData(wikiData){
-        console.log(wikiData);
         const pageData = await wikiData;
-        const pageHTMLText = pageData['parse']['text']['*'];
-        const parserObject = new DOMParser();
-        const paragraphAttribute = parserObject.parseFromString(pageHTMLText, 'text/html').querySelectorAll("p")[1].textContent;
-        return paragraphAttribute.replace(/\[\w+\]/gm, '');
+        if (pageData !== undefined){
+            const pageHTMLText = pageData['parse']['text']['*'];
+            const parserObject = new DOMParser();
+            const paragraphAttribute = parserObject.parseFromString(pageHTMLText, 'text/html').querySelectorAll("p")[1].textContent;
+            return paragraphAttribute.replace(/\[\w+\]/gm, '');
+        }
+        return 'Sorry, we were unable to retrieve a description of the inputted city...';
     }
     // ==================================== WEATHER CHART ============================
     function makeWeatherChart(minData, maxData, dayData){
@@ -380,16 +395,26 @@ document.addEventListener("DOMContentLoaded", async () => {
     function getWeekdaysFormattted(){
         const week = [];
         const DAYS_IN_WEEK = 7;
+        const monthToDays = new Map([ [1, 31], [2, 28], [3, 31], [4, 30], [5, 31], [6, 30], [7, 31], [8, 31], [9, 31], [10, 31], [11, 30], [12, 31] ]);
+        const currentDate = new Date(); // Chart starts at today + 1
         for (let i = 0; i < DAYS_IN_WEEK; i++){
-            const dateObject = new Date();
-            const date = dateObject.getDay()
-            const monthFormatted = new Intl.DateTimeFormat("en-us", {month: "long"}).format(dateObject);
-            week.push(monthFormatted + date);
+            let date = currentDate.getDate() + i;
+            const numDaysInCurrentMonth = monthToDays.get(currentDate.getMonth());
+            console.log(numDaysInCurrentMonth);
+            if (date > numDaysInCurrentMonth){
+                currentDate.setMonth(currentDate.getMonth() + 1);
+            }
+            console.log(currentDate.getMonth());
+            const monthFormatted = new Intl.DateTimeFormat("en-us", {month: "long"}).format(currentDate);
+            week.push(monthFormatted + " " + date);
         }
         return week;
     }
-    function wikipediaEdgeCaseQueries(cityCountry){
+    function wikipediaEdgeCaseQueries(userQuery){
 
     }
 
+    // Map containing 
+    const searchMap = new Map([ ["Portland", "Portland Oregon"], ["New York", "New York City"], ["Anchorage, United States", "Anchorage, Alaska"], ["London, Canada"]])
+    
 });

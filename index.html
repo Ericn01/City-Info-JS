@@ -30,12 +30,12 @@
             <h1 class="city-data name-country"> </h1>
             <h2 class="city-data current-time"></h2>
             <div class="sunrise-sunset-container">
-                <div>
-                    <img id="sunrise-img" draggable="false" src="./images/weather-assets/sunrise.png" width="36px"> 
+                <div id="sunrise">
+                    <img id="sunrise-img" draggable="false" src="./images/weather-assets/sunrise.png" width="50px"> 
                     <span class="sun-time" id="sunrise-time"> </span> <br>
                 </div>
                 <div id="sunset">
-                    <img id="sunset-img" draggable="false" src="./images/weather-assets/sunset.png" width="36px"> 
+                    <img id="sunset-img" draggable="false" src="./images/weather-assets/sunset.png" width="50px"> 
                     <span class="sun-time" id="sunset-time"> </span>
                 </div>
             </div>
@@ -53,19 +53,33 @@
             <div id="map"></div>
         </div>
         <div class="weather-info"> 
-            <h2> Weather Information </h2>
-            <div class="current-temperature"> </div>
-            <div class="feels-like-temperature"> </div>
-            <div class="humidity"></div>
-            <div class="wind-speed"></div>
-            <div class="weather-description"> </div>
+            <div class="weather-info-heading">
+                <h2> Weather Information </h2>
+                <label for="farenheit">°F</label>
+                <input name="temp-unit" id="farenheit" class="temp-unit" type="radio" value="farenheit">
+                <label for="celcius">°C</label>
+                <input name="temp-unit" id="celcius" class="temp-unit" type="radio" value="celcius" checked>
+            </div>
+            <div class="temperature"> 
+                <div class="current-temperature" id="currentTemp"> </div>
+                <img src="images/weather-assets/hot.png" height="40px"/>
+                <div class="feels-like-temperature" id="feelsTemp"> </div>
+            </div>
+            <div class="humid">
+                <div class="humidity"> </div>
+                <img src="images/weather-assets/humidity.png" height="40px"/>
+            </div>
+            <div class="wind">
+                <div class="wind-speed"></div>
+                <img src="images/weather-assets/wind.png" height="40px"/>
+            </div>
+            <div class="weather-description"> 
+
+            </div>
         </div>
         <div class="weather-chart-container"> 
             <h2> Week Temperature Forecast (°C) </h2>
             <canvas id="weather-chart"></canvas>
-        </div>
-        <div class="weather-forecast">
-
         </div>
     </section>
 </body>
