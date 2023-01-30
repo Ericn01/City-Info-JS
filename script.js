@@ -55,6 +55,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Handles the user city input 
     function handleCityInput(){
         const userCityInput  = document.querySelector("#city-input").value;
+        loadAnimationLogic("active"); 
         // Retrieves the city Object that the user was looking for
         const inputCity = getSpecifiedCity(userCityInput);
         if (inputCity != ""){ // The input is not null, or undefined, etc.
@@ -62,6 +63,18 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
         else{
             cityNotFoundError(userCityInput)
+        }
+    }
+    // Loader (gif) logic
+    function loadAnimationLogic (state){
+        const animationImg = document.querySelector(".loading-img");
+        animationImg.setAttribute("src", "./images/loading.gif");
+        if (state === "active"){
+            cityInputBtn.style.display = "none";
+            animationImg.style.display = 'inline';
+        } else if (state === 'inactive'){
+            cityInputBtn.style.display = "inline";
+            animationImg.style.display = "inline";
         }
     }
     // The logic that is applied if a city could not be found.
@@ -72,7 +85,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         cityInput.textContent = "";
     }    
     async function cityInfoDisplay(inputCity){
-        changeView("city-info"); // Switches the page view to display city information
         // Lat and long retrieved from the city obj
         const cityLatitude = inputCity.lat;
         const cityLongitude = inputCity.lng;
@@ -91,6 +103,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         // Make the weather chart
         const wData = getWeatherChartData(weatherData.daily); // min, max, avg data  
         makeWeatherChart(wData.minTemp, wData.maxTemp, wData.dayTemp);
+        changeView("city-info"); // Switches the page view to display city information -> only once everything is done
     }
     /* Displays the time information for the specified timezone*/
     function displayTimeInformation(timezone){
@@ -104,15 +117,17 @@ document.addEventListener("DOMContentLoaded", async () => {
         const currentTime = document.querySelector(".current-time");
         // Setting up the text content
         currentDate.textContent = dateAtLocation;
-        currentTime.textContent = timeAtLocation;
+        currentTime.textContent = `Currently ${timeAtLocation} (${timezone})`;
     }
     async function performWikiDataLogic(inputCity){
         // Grab the wiki data container
         const wikiContainer = document.querySelector(".wiki-data");
         // The wikipedia search query 
         let queryText = ""
-        // Logic for different type of search 
-        inputCity.population > 500000 ? queryText = inputCity.city : queryText = `${inputCity.city}, ${inputCity.country}`;
+        // Majority english countries 
+        const enCountries = ['United Kingdom', 'United States', 'Australia', 'Barbados', 'Dominica', 'Ireland', 'New Zealand', 'Jamaica', 'Guyana'];
+        // Logic for different types of searches
+        inputCity.population > 500000 && !enCountries.includes(inputCity.country) ? queryText = inputCity.city : queryText = `${inputCity.city}, ${inputCity.country}`;
         // let the text content be what we retrieved.
         wikiContainer.textContent = await parseWikiData(getCityWikiPage(queryText));
     }
@@ -134,7 +149,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         cityNameCountryContainer.textContent = name + ", " + country + " " + getCountryEmoji(country);
         cityPopulationContainer.textContent = `The ${name} metro area has a population of approximately ` + formatPopulationValue(population) + " people";
         document.querySelector("#sunrise-time").textContent = new Intl.DateTimeFormat('en-us', sunsetSunriseOptions).format(sunriseTime);
-        document.querySelector("#sunset-time").textContent = new Intl.DateTimeFormat('en-us', sunsetSunriseOptions).format(sunsetTime);
+        document.querySelector("#sunset-time").textContent = new Intl.DateTimeFormat('en-us', sunsetSunriseOptions).format(sunsetTime);        
     }
     /* Determines how zoomed in the city map should be based on the population. Very accurate for most NA cities, less so for EU cities (heavy density) */
     function getMapZoomLevelFromPopulation(population){
@@ -196,22 +211,24 @@ document.addEventListener("DOMContentLoaded", async () => {
         return weatherData;
     }
     // Temperature unit change logic
-    const temperatureInputs = document.querySelectorAll(".temp-unit");
-    temperatureInputs.forEach( (input) => input.addEventListener('click', useUnit));
-
-    function useUnit (kelvinTemp) {
-        const selectedUnit = this.value;
+    function tempString (kelvinTemp) {
+        const radio = document.querySelector("#fahrenheit");
         let tempString = ""  
-        selectedUnit === "celcius" ? tempString = `${convertKelvinToUnit('celcius', kelvinTemp)}°C` : tempString = `${convertKelvinToUnit('fahrenheit', kelvinTemp)}°F`;
+        radio.checked ? tempString = `${convertKelvinToUnit('fahrenheit', kelvinTemp)}°F` : `${convertKelvinToUnit('celcius', kelvinTemp)}°C}`; // There are only two possible states for the radio buttons, so this is an easy way to apply the logic.
         return tempString;
     }
+
     /* Generates the markup for the weather data we want to display */
     function makeRelevantWeatherDataMarkup(weatherObj){ 
         document.querySelector(".humidity").textContent = "The humidity at this location is " + weatherObj.current.humidity + "%";
-        document.querySelector(".weather-description").textContent = "At the moment, the forecast is " + weatherObj.current.weather[0].description;
+        document.querySelector(".weather-description").textContent = "The forecast is currently " + weatherObj.current.weather[0].description;
         document.querySelector(".wind-speed").textContent = "Wind Speed: " + weatherObj.current.wind_speed + "km/h";
-        document.querySelector("#currentTemp").textContent += `Currently ${convertKelvinToUnit('celcius', weatherObj.current.temp)}°C / ${convertKelvinToUnit('fahrenheit', weatherObj.current.temp)}°F`;
-        document.querySelector("#feelsTemp").textContent += `Feels like ${convertKelvinToUnit('celcius', weatherObj.current.feels_like)}°C / ${convertKelvinToUnit('fahrenheit', weatherObj.current.feels_like)}°F`;
+        document.querySelector("#currentTemp").textContent = `Currently ${convertKelvinToUnit('fahrenheit', weatherObj.current.temp)}°F / ${convertKelvinToUnit('celcius', weatherObj.current.temp)}°C`
+        document.querySelector(".pressure").textContent = `Atmospheric pressure: ${weatherObj.current.pressure } hPa`
+        document.querySelector(".visibility").textContent = `Visibility up to ${Math.round(weatherObj.visibility / 10000,1)}km`;
+        document.querySelector("#feelsTemp").textContent = `Feels like ${convertKelvinToUnit('fahrenheit', weatherObj.current.feels_like)}°F / ${convertKelvinToUnit('celcius', weatherObj.current.feels_like)}°C`;
+        // Change the image being used for the temperature dependent on the value at the given city.
+        weatherObj.current.temp < 0 ? document.querySelector("#thermo").setAttribute("src", "./images/weather-assets/cold.png") : document.querySelector("#thermo").setAttribute("src", "./images/weather-assets/hot.png") 
     }
     // As the function name suggests, this function figures out the local time of the given location.
     function calculateTimeAtLocation(locationTimezone){
@@ -246,7 +263,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                         const photoDiv = document.querySelector("#google-maps-city-photo");
                         photoDiv.innerHTML = ""; // resets any previous images in there
                         const cityImg = document.createElement("img");
-                        cityImg.setAttribute("src", result.photos[0].getUrl({maxHeight: 400}));
+                        cityImg.setAttribute("src", result.photos[0].getUrl({maxHeight: 350})); // Images with a height greater than approx. 350 pixels look a lil wonky
                         cityImg.setAttribute("alt", 'City Image');
                         cityImg.setAttribute("id", "cityImg")
                         photoDiv.appendChild(cityImg);
@@ -343,7 +360,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
     async function parseWikiData(wikiData){
         const pageData = await wikiData;
-        console.log(pageData);
         if (!pageData['parse']['text']['*'].includes("NewPP limit report") || pageData !== undefined){
             const pageHTMLText = pageData['parse']['text']['*'];
             const parserObject = new DOMParser();
@@ -408,6 +424,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         const chartConfig = {type: 'line', data:data, options: chartOptions};
         new Chart(context, chartConfig); // create and display the chart
     }
+    // Formats the weekdays (x axis) of the weather chart
     function getWeekdaysFormattted(){
         const week = [];
         const DAYS_IN_WEEK = 7;
@@ -419,7 +436,6 @@ document.addEventListener("DOMContentLoaded", async () => {
             const numDaysInCurrentMonth = monthNumToDays.get(currentMonth);
             if (date > numDaysInCurrentMonth){
                 date = Math.abs(date - numDaysInCurrentMonth);
-                console.log(currentMonth + 1);
                 currentDate.setMonth(currentMonth + 1);
             }
             const monthFormatted = new Intl.DateTimeFormat("en-us", {month: "long"}).format(currentDate);
@@ -433,6 +449,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     // Map containing 
-    const searchMap = new Map([ ["Portland", "Portland Oregon"], ["New York", "New York City"], ["Anchorage, United States", "Anchorage, Alaska"], ["London, Canada"]])
-    
+    const searchMap = new Map([ ["Portland", "Portland Oregon"], ["New York", "New York City"], ["Anchorage, United States", "Anchorage, Alaska"], ["London, Canada", "London, Ontario"]])
+   
 });

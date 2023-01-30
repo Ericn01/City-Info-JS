@@ -1,6 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Lora&display=swap');
 body{
-    margin: 2rem 5rem;
+    margin: 2rem 10rem;
     background-size: stretch;
     background-repeat: no-repeat;
     background-color: whitesmoke;
@@ -31,7 +31,6 @@ h3{
 }
 .city-info-view div{
     align-self: top;
-    padding: 15px;
 }
 .city-not-found{
     margin-top: 25px;
@@ -41,17 +40,20 @@ h3{
 .weather-info{
     display: grid;
     gap: 5px;
-    margin-left: 25px;
-    font-size: 1.1rem;
+    font-size: 1.2rem;
     grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 .weather-info div, #sunrise, #sunset{
     display: flex;
     align-items: center;
+    padding: 0px;
 }
 .weather-info:first-child{
     grid-column: span 2;
     background: red;
+}
+.weather-chart-container{
+    margin-left: 25px;
 }
 #city-input{
     padding: 11.5px;
@@ -64,7 +66,7 @@ h3{
     border: 0.8px solid purple;
 }
 button{
-    padding: 7.5px;
+    padding: 8px;
     background-color: lightcoral;
     border-radius: 10px;
     margin: 20px 5px;
@@ -82,6 +84,9 @@ button:hover{
     background-color: coral;
     cursor: pointer;
 }
+.action-wrapper{
+    text-align: center;
+}
 #temp-input-one{
     margin-left: 25px;
 }
@@ -91,11 +96,11 @@ button:hover{
 .city-info-view-visible{
     display: grid;
     border-radius: 20px;
-    column-gap: 15px;
+    column-gap: 30px;
     row-gap: 3.5px;
     padding: 50px;
     background: linear-gradient(#2C5364, #203A43, #0F2027); 
-    grid-template-columns: 56% 44%;
+    grid-template-columns: 55% 45%;
 }
 
 #map{
@@ -103,7 +108,7 @@ button:hover{
     min-height: 300px;
     max-height: 525px;
     min-width: 325px;
-    max-width: 475px;
+    max-width: 500px;
     border-radius: 20px;
     border: 2px solid black;
 }
@@ -121,6 +126,12 @@ button:hover{
 .city-description{
     margin-left: 25px;
     align-self: start;
+    max-width: 750px;
+}
+.image-container, .city-map{
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 .wiki-data{
     line-height: 30px;
@@ -132,8 +143,7 @@ button:hover{
 #sunrise-time, #sunset-time{
     font-size: 1.6rem;
     font-weight: 500;
-    margin: 0px 15px;
-    
+    margin: 0px 15px; 
 }
 #sunrise, #sunset{
     display: flex;
@@ -142,6 +152,7 @@ button:hover{
 .sunrise-sunset-container{
     display: flex;
     align-items: center;
+    margin: 25px;
 }
 #sunset{
     margin-left: 35px;
@@ -153,37 +164,43 @@ button:hover{
 }
 .current-date{
     margin-left: 32px;
-    font-size: 1.9rem;
-    font-weight: bold;
+    font-size: 1.85rem;
 }
 .current-time{
-    font-size: 2rem;
+    font-size: 1.6rem;
     font-weight: normal;
     margin: 8px 0px 8px 20px;
 }
 .current-temperature{
     list-style-type: none;
+    margin: 0px;
+    padding: 0px;
 }
-.current-temperature li{
-
+.weather-info-heading h2{
+    margin: 0px;
+}
+#feelsTemp{
+    margin-top: 15px;
 }
 #weather-chart{
     max-width: 650px;
 }
-
+.weather-info img{
+    margin-left: 25px;
+}
 .weather-info-heading{
     display: flex;
     text-align: center;
     grid-column: span 2; 
 }
-.time-container{
+.time-container, .date-container{
     display: flex;
+    margin: 25px;
     margin-left: 32px;
     justify-content: left;
     align-items: center;
     padding: 0px;
 }
-
 @media only screen and (max-width: 1200px){
     
 }

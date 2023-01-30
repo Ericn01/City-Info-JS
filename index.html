@@ -19,18 +19,24 @@
     </header>
     <section class="city-input-view">
         <h1> City Information Tool </h1>
-        <h2> Interesting Data For Over 10,000 Locations! </h2>
-        <input type="text" id="city-input" placeholder="Enter City Name!" list="location-data-list" autocomplete="off">
-        <datalist id="location-data-list"> </datalist>
-        <button id="city-submit-btn" value="city-info"> Locate 🔎 </button>
+        <h2> Interesting Data For Over 10,000 Cities! </h2>
+        <div class="action-wrapper">
+            <input type="text" id="city-input" placeholder="Enter City Name!" list="location-data-list" autocomplete="off">
+            <datalist id="location-data-list"> </datalist>
+            <button id="city-submit-btn" value="city-info"> Locate 🔎 </button>
+            <img class="loading-img" width="64px"/>
+        </div>
         <div class="city-not-found"> </div>
     </section>
     <section class="city-info-view">
         <div class="info-heading">
             <h1 class="city-data name-country"> </h1>
-            <h2 class="city-data current-date"> </h2>
+            <section class="date-container">
+                <img src="./images/calendar.png" alt="time" id="clock-image" width="40px"/>
+                <h2 class="city-data current-date"> </h2>
+            </section>
             <section class="time-container"> 
-                <img src="./images/clock.png" alt="time" id="clock-image" width="40px"/>
+                <img src="./images/weather-assets/sun.png" alt="time" id="time-image" width="40px"/>
                 <h2 class="city-date current-time"> </h2>
             </section>
             <div class="sunrise-sunset-container">
@@ -56,16 +62,22 @@
             <h2> City Map </h2>
             <div id="map"></div>
         </div>
+        <div class="weather-chart-container"> 
+            <h2> Week Temperature Forecast </h2>
+            <canvas id="weather-chart"></canvas>
+        </div>
         <div class="weather-info"> 
             <div class="weather-info-heading">
                 <h2> Weather Information </h2>
-                <div id="temp-input-one">
-                    <label for="fahrenheit">°F</label>
-                    <input name="temp-unit" id="fahrenheit" class="temp-unit" type="radio" value="fahrenheit">
-                </div>
-                <div id="temp-input-two">
-                    <label for="celcius">°C</label>
-                    <input name="temp-unit" id="celcius" class="temp-unit" type="radio" value="celcius" checked>
+                <div id="temp-container">
+                    <div id="temp-input-one">
+                        <label for="fahrenheit">°F</label>
+                        <input name="temp-unit" id="fahrenheit" class="temp-unit" type="radio" value="fahrenheit">
+                    </div>
+                    <div id="temp-input-two">
+                        <label for="celcius">°C</label>
+                        <input name="temp-unit" id="celcius" class="temp-unit" type="radio" value="celcius" checked>
+                    </div>
                 </div>
             </div>
             <div class="temperature"> 
@@ -73,23 +85,27 @@
                     <li id="currentTemp"> </li>
                     <li class="feels-like-temperature" id="feelsTemp"> </li>
                 </ul>
-                <img src="images/weather-assets/hot.png" height="40px"/>
+                <img id="thermo" src="images/weather-assets/hot.png" height="40px"/>
             </div>
             <div class="humid">
-                <div class="humidity"> </div>
+                <h3 class="humidity"> </h3>
                 <img src="images/weather-assets/humidity.png" height="40px"/>
             </div>
             <div class="wind">
-                <div class="wind-speed"></div>
+                <h3 class="wind-speed"></h3>
                 <img src="images/weather-assets/wind.png" height="40px"/>
             </div>
-            <div class="weather-description"> 
-
+            <div class="atmospheric-pressure">
+                <h3 class="pressure"></h3>
+                <img src="images/weather-assets/barometer.png" height="40px"/>
             </div>
-        </div>
-        <div class="weather-chart-container"> 
-            <h2> Week Temperature Forecast (°C) </h2>
-            <canvas id="weather-chart"></canvas>
+            <div class="vis">
+                <h3 class="visibility"></h3>
+                <img src="images/weather-assets/binoculars.png" height="40px"/>
+            </div>
+            <div class="weather-description"> 
+                <h3 class="weather-context"> </h3>
+            </div>
         </div>
     </section>
 </body>
