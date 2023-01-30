@@ -216,7 +216,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         radio.checked ? tempString = `${convertKelvinToUnit('fahrenheit', kelvinTemp)}°F` : `${convertKelvinToUnit('celcius', kelvinTemp)}°C}`; // There are only two possible states for the radio buttons, so this is an easy way to apply the logic.
         return tempString;
     }
-
     /* Generates the markup for the weather data we want to display */
     function makeRelevantWeatherDataMarkup(weatherObj){ 
         console.log(weatherObj);
@@ -450,7 +449,6 @@ document.addEventListener("DOMContentLoaded", async () => {
             const monthFormatted = new Intl.DateTimeFormat("en-us", {month: "long"}).format(currentDate);
             week.push(monthFormatted + " " + date);
         }
-        
         return week;
     }
     function wikipediaEdgeCaseQueries(userQuery){
