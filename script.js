@@ -131,7 +131,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         // let the text content be what we retrieved.
         wikiContainer.textContent = await parseWikiData(getCityWikiPage(queryText));
     }
-    
     function getWeatherChartData(weatherData){
         const min = [];const max = [];const day = [];
         weatherData.forEach( (entry) => {
@@ -220,15 +219,27 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     /* Generates the markup for the weather data we want to display */
     function makeRelevantWeatherDataMarkup(weatherObj){ 
+        console.log(weatherObj);
         document.querySelector(".humidity").textContent = "The humidity at this location is " + weatherObj.current.humidity + "%";
-        document.querySelector(".weather-description").textContent = "The forecast is currently " + weatherObj.current.weather[0].description;
-        document.querySelector(".wind-speed").textContent = "Wind Speed: " + weatherObj.current.wind_speed + "km/h";
+        document.querySelector(".weather-description").textContent = "The forecast is " + weatherObj.current.weather[0].description;
+        document.querySelector(".wind-speed").textContent = "Wind speed: " + weatherObj.current.wind_speed + "km/h";
         document.querySelector("#currentTemp").textContent = `Currently ${convertKelvinToUnit('fahrenheit', weatherObj.current.temp)}°F / ${convertKelvinToUnit('celcius', weatherObj.current.temp)}°C`
-        document.querySelector(".pressure").textContent = `Atmospheric pressure: ${weatherObj.current.pressure } hPa`
-        document.querySelector(".visibility").textContent = `Visibility up to ${Math.round(weatherObj.visibility / 10000,1)}km`;
+        document.querySelector(".pressure").textContent = `Atmospheric pressure is ${weatherObj.current.pressure } hPa`
+        document.querySelector(".visibility").textContent = `Visibility up to ${Math.round(weatherObj.current.visibility / 1000, 1)}km`;
         document.querySelector("#feelsTemp").textContent = `Feels like ${convertKelvinToUnit('fahrenheit', weatherObj.current.feels_like)}°F / ${convertKelvinToUnit('celcius', weatherObj.current.feels_like)}°C`;
         // Change the image being used for the temperature dependent on the value at the given city.
-        weatherObj.current.temp < 0 ? document.querySelector("#thermo").setAttribute("src", "./images/weather-assets/cold.png") : document.querySelector("#thermo").setAttribute("src", "./images/weather-assets/hot.png") 
+        const tempImg = document.querySelector("#thermo");
+        convertKelvinToUnit('celcius', weatherObj.current.temp) < 0 ? tempImg.src = "./images/weather-assets/cold.png" : tempImg.src = "./images/weather-assets/hot.png";
+        // Change the image being used for day/night based on a comparison of current time to location sunset/sunrise time.
+        setTimeImage(weatherObj)
+    }
+    function setTimeImage(weatherObj){
+        const currentTime = new Date(new Date().toLocaleString("en-US", {timeZone: weatherObj.current.timezone})).getTime();
+        const sunsetTime = weatherObj.current.sunset * 1000;
+        const sunriseTime = weatherObj.current.sunrise * 1000;
+        console.log(currentTime, sunsetTime, sunriseTime);
+        const timeImg = document.querySelector("#time-image");
+        currentTime >= sunriseTime && currentTime < sunsetTime ? timeImg.src = "./images/weather-assets/sun.png" : timeImg.src = "./images/weather-assets/moon.png";
     }
     // As the function name suggests, this function figures out the local time of the given location.
     function calculateTimeAtLocation(locationTimezone){
@@ -393,9 +404,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             },
             plugins: {
                 legend: {
-                    title: {
-                        color: "white",
-                    }
+                    labels: {color: "white"},    
                 }
             }
         }
@@ -435,8 +444,8 @@ document.addEventListener("DOMContentLoaded", async () => {
             let date = currentDate.getDate() + i;
             const numDaysInCurrentMonth = monthNumToDays.get(currentMonth);
             if (date > numDaysInCurrentMonth){
-                date = Math.abs(date - numDaysInCurrentMonth);
                 currentDate.setMonth(currentMonth + 1);
+                date = Math.abs(date - numDaysInCurrentMonth);
             }
             const monthFormatted = new Intl.DateTimeFormat("en-us", {month: "long"}).format(currentDate);
             week.push(monthFormatted + " " + date);
@@ -447,8 +456,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     function wikipediaEdgeCaseQueries(userQuery){
 
     }
-
     // Map containing 
     const searchMap = new Map([ ["Portland", "Portland Oregon"], ["New York", "New York City"], ["Anchorage, United States", "Anchorage, Alaska"], ["London, Canada", "London, Ontario"]])
-   
 });

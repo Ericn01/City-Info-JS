@@ -1,6 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Lora&display=swap');
 body{
-    margin: 2rem 10rem;
+    margin: 2rem 10.5rem;
     background-size: stretch;
     background-repeat: no-repeat;
     background-color: whitesmoke;
@@ -39,14 +39,18 @@ h3{
 }
 .weather-info{
     display: grid;
-    gap: 5px;
+    column-gap: 10px;
     font-size: 1.2rem;
     grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 .weather-info div, #sunrise, #sunset{
     display: flex;
     align-items: center;
+    justify-content: space-between;
     padding: 0px;
+}
+.weather-info div{
+    padding: 5px;
 }
 .weather-info:first-child{
     grid-column: span 2;
@@ -85,7 +89,9 @@ button:hover{
     cursor: pointer;
 }
 .action-wrapper{
-    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 #temp-input-one{
     margin-left: 25px;
@@ -93,11 +99,14 @@ button:hover{
 .city-info-view{
     display: none;
 }
+.loading-img{
+    margin-left: 15px;
+}
 .city-info-view-visible{
     display: grid;
     border-radius: 20px;
-    column-gap: 30px;
-    row-gap: 3.5px;
+    column-gap: 25px;
+    row-gap: 18.5px;
     padding: 50px;
     background: linear-gradient(#2C5364, #203A43, #0F2027); 
     grid-template-columns: 55% 45%;
@@ -128,7 +137,7 @@ button:hover{
     align-self: start;
     max-width: 750px;
 }
-.image-container, .city-map{
+.image-container{
     display: flex;
     justify-content: center;
     align-items: center;
@@ -162,11 +171,7 @@ button:hover{
     padding: 8.5px;
     background-color: rgba(27, 12, 255, 1);
 }
-.current-date{
-    margin-left: 32px;
-    font-size: 1.85rem;
-}
-.current-time{
+.current-time, .current-date{
     font-size: 1.6rem;
     font-weight: normal;
     margin: 8px 0px 8px 20px;
@@ -186,7 +191,7 @@ button:hover{
     max-width: 650px;
 }
 .weather-info img{
-    margin-left: 25px;
+    margin-right: 10px;
 }
 .weather-info-heading{
     display: flex;
