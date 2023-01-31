@@ -128,8 +128,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         currentTime.textContent = `Currently ${timeAtLocation} (${timezone})`;
     }
     // Map containing edge cases
-    const searchMap = new Map([ ["Portland, United States", "Portland, Oregon"], ["New York, United States", "New York City"], ["Anchorage, United States", "Anchorage, Alaska"], ["London, Canada", "London, Ontario"], ["Guelph, Canada", "Guelph, Ontario"], ["Montréal, Canada", "Montreal"], ["Quebec City, Canada", "Quebec City"], 
-["Birmingham, United States", "Birmingham, Alabama"], ["Ellore, India", "Eluru"], ["An Najaf, Iraq", "Najaf"]])
+    const searchMap = new Map([ ["Portland, United States", "Portland, Oregon"], ["New York, United States", "New York City"], ["Anchorage, United States", "Anchorage, Alaska"], ["London, Canada", "London, Ontario"], ["Guelph, Canada", "Guelph"], ["Montréal, Canada", "Montreal"], ["Quebec City, Canada", "Quebec City"], 
+["Birmingham, United States", "Birmingham, Alabama"], ["Ellore, India", "Eluru"], ["An Najaf, Iraq", "Najaf"], ["Winnipeg, Canada", "Winnipeg"]])
     async function performWikiDataLogic(inputCity){
         let unrefinedQuery = ""
         inputCity.population > 750000 ? unrefinedQuery = inputCity.city : unrefinedQuery = `${inputCity.city}, ${inputCity.country}`; // Large cities tend to work better when you only call their name, and not their country using the wikipedia API
@@ -228,7 +228,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         temperatureUnit === 'celcius' ? temperatureString = '°C' : temperatureString = '°F';
         return temperatureString;
     }
-    
     /* Generates the markup for the weather data we want to display */
     function makeRelevantWeatherDataMarkup(weatherObj){ 
         const weatherStrings = ["The humidity at this location is " + weatherObj.current.humidity + "%", 
@@ -253,7 +252,18 @@ document.addEventListener("DOMContentLoaded", async () => {
         const sunsetTime = weatherObj.current.sunset * 1000;
         const sunriseTime = weatherObj.current.sunrise * 1000;
         const timeImg = document.querySelector("#time-image");
-        currentTime >= sunriseTime && currentTime < sunsetTime ? timeImg.src = "./images/weather-assets/sun.png" : timeImg.src = "./images/weather-assets/moon.png";
+        const contentContainer = document.querySelector(".city-info-view");
+        if (currentTime >= sunriseTime && currentTime < sunsetTime){
+            timeImg.src = "./images/weather-assets/sun.png";
+            contentContainer.style.background = 'linear-gradient(62deg, #FBAB7E 0%, #F7CE68 100%)';
+            contentContainer.style.textShadow = '1px 1px 2px rgba(255,255,255, 0.25)';
+            contentContainer.style.color = 'black';
+        } else{
+            timeImg.src = "./images/weather-assets/moon.png"
+            contentContainer.style.background = 'linear-gradient(#2C5364, #203A43, #0F2027)';
+            contentContainer.style.textShadow = '1px 1px 2px rgba(0,0,0, 0.25)';
+            contentContainer.style.color = 'white';
+        }
     }
     // As the function name suggests, this function figures out the local time of the given location.
     function calculateTimeAtLocation(locationTimezone){
@@ -332,12 +342,25 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
         else if (newView === 'city-info'){
             cityInputView.style.display = 'none';
-            cityInfoView.classList.toggle("city-info-view-visible")
+            if (window.innerWidth < 500){
+                cityInfoView.style.display = 'block';
+            }else {
+                cityInfoView.style.display = 'grid';
+            }
         }
         else{
             console.log("The view paramater passed is not supported yet");
         }
     }
+    // Listens for screen/window resizes
+    addEventListener("resize", () => {
+        if (window.innerWidth < 500){
+            document.querySelector(".city-info-view").style.display = 'block';
+        }
+        else {
+            document.querySelector(".city-info-view").style.display = 'grid';
+        }
+    })
     /* Autocompletes the title options after the user types in a certain amount of characters*/
     function autocompleteCityInput(){
         const datalistReference = this.list; // References the datalist element associated with the input
@@ -451,14 +474,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     function getWeekdaysFormattted(){
         const week = [];
         const DAYS_IN_WEEK = 7;
-        const currentDate = new Date(); // Chart starts at today + 1
-        const currentMonth = currentDate.getMonth();
+        const currentDate = new Date(); 
         const monthNumToDays = new Map([ [0, 31], [1, 28], [2, 31], [3, 30], [4, 31], [5, 30], [6, 31], [7, 31], [8, 31], [9, 31], [10, 30], [11, 31] ]); // 0=jan, 1=feb, ...
         for (let i = 0; i < DAYS_IN_WEEK; i++){
             let date = currentDate.getDate() + i;
-            const numDaysInCurrentMonth = monthNumToDays.get(currentMonth);
+            const numDaysInCurrentMonth = monthNumToDays.get(currentDate.getMonth());
             if (date > numDaysInCurrentMonth){
-                currentDate.setMonth(currentMonth + 1);
+                const newMonth = currentDate.getMonth() + 1;
+                currentDate.setMonth(newMonth);
                 date = Math.abs(date - numDaysInCurrentMonth);
             }
             const monthFormatted = new Intl.DateTimeFormat("en-us", {month: "long"}).format(currentDate);

@@ -10,7 +10,6 @@ body{
 }
 h1{
     font-size: 3.35rem;
-    text-shadow: 1px 1px 1px black;
 }
 h2{
     font-size: 1.8rem;
@@ -42,14 +41,13 @@ h3{
     justify-content: space-between;
     padding: 0px;
 }
-.weather-info div{
-    padding: 5px;
-}
 .weather-info:first-child{
     grid-column: span 2;
     background: red;
 }
-
+.weather-info div h3{
+    margin: 0px;
+}
 #city-input{
     padding: 11.5px;
     color: black;
@@ -68,7 +66,6 @@ button{
     margin-left: 15px;
     font-size: 15px;
     font-weight: bold;
-    text-shadow: 1px 1px black;
     border: 1px solid black;
     width: 125px;
     min-width: 50px;
@@ -84,15 +81,11 @@ button:hover{
     justify-content: center;
     align-items: center;
 }
-
-.city-info-view{
-    display: none;
-}
 .loading-img{
     margin-left: 15px;
 }
-.city-info-view-visible{
-    display: grid;
+.city-info-view{
+    display: none;
     border-radius: 20px;
     column-gap: 15px;
     row-gap: 30px;
@@ -162,11 +155,6 @@ button:hover{
     font-size: 1.6rem;
     font-weight: normal;
     margin: 8px 0px 8px 20px;
-}
-.current-temperature{
-    list-style-type: none;
-    margin: 0px;
-    padding: 0px;
 }
 .weather-info-heading h2{
     margin: 0px;
@@ -238,15 +226,16 @@ button:hover{
         padding: 0px;
         margin: 0px;
     }
-    h1{
-        text-align: center;
-        font-size: 1.35rem;
+    
+    .name-country{
+        text-align: left;
+        font-size: 1.8rem;
     }
     .current-date, .current-time, .sun-time{
         font-size: 1.1rem;
     }
     .city-info-view div{
-        padding: 3px 15px;
+        padding: 3px 20px;
     }
     h2{
         font-size: 1.2rem;
@@ -266,9 +255,20 @@ button:hover{
     }
     .weather-info{
         margin-top: 15px;
+        display: block;
+    }
+    .weather-info-heading{
+        flex-basis: 70% 30%;
+    }
+    .weather-info div{
+        padding: 0px;
+        justify-content: space-between;
+        margin: 10px 0px;
+    }
+    .weather-info div img{
+        text-align: center;
     }
     .city-info-view{
-        display: block;
         width: auto;
         margin: 20px;
         padding: 0px;
