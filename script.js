@@ -50,6 +50,14 @@ document.addEventListener("DOMContentLoaded", async () => {
         const citySeed = Math.floor(Math.random() * NUM_CITIES);
         cityInput.placeholder = `${cityData[citySeed].city}, ${cityData[citySeed].country}`; // Random placeholder for a city 
     }
+    // Switch Temperature Unit
+    let temperatureUnit = "celcius"; // Default unit
+    document.querySelectorAll("#temp-container input").forEach( (tempElem) => tempElem.addEventListener('click', modifyTemperatureUnit));
+    function modifyTemperatureUnit(){
+        const currentTemp = document.querySelector("#currentTemp");
+        const feelsLikeTemp = document.querySelector("#feelsTemp");
+
+    }
     // Call the function 
     loadCityInputPlaceholder();
     // Handles the user city input 
@@ -119,24 +127,28 @@ document.addEventListener("DOMContentLoaded", async () => {
         currentDate.textContent = dateAtLocation;
         currentTime.textContent = `Currently ${timeAtLocation} (${timezone})`;
     }
+    // Map containing edge cases
+    const searchMap = new Map([ ["Portland, United States", "Portland, Oregon"], ["New York, United States", "New York City"], ["Anchorage, United States", "Anchorage, Alaska"], ["London, Canada", "London, Ontario"], ["Guelph, Canada", "Guelph, Ontario"], ["Montréal, Canada", "Montreal"], ["Quebec City, Canada", "Quebec City"], 
+["Birmingham, United States", "Birmingham, Alabama"], ["Ellore, India", "Eluru"]])
     async function performWikiDataLogic(inputCity){
+        let unrefinedQuery = ""
+        inputCity.population > 750000 ? unrefinedQuery = inputCity.city : unrefinedQuery = `${inputCity.city}, ${inputCity.country}`; // Large cities tend to work better when you only call their name, and not their country using the wikipedia API
         // Grab the wiki data container
         const wikiContainer = document.querySelector(".wiki-data");
         // The wikipedia search query 
         let queryText = ""
-        // Majority english countries 
-        const enCountries = ['United Kingdom', 'United States', 'Australia', 'Barbados', 'Dominica', 'Ireland', 'New Zealand', 'Jamaica', 'Guyana'];
         // Logic for different types of searches
-        inputCity.population > 500000 && !enCountries.includes(inputCity.country) ? queryText = inputCity.city : queryText = `${inputCity.city}, ${inputCity.country}`;
+        queryText = searchMap.get(unrefinedQuery) ?? unrefinedQuery;
+        console.log(queryText);
         // let the text content be what we retrieved.
         wikiContainer.textContent = await parseWikiData(getCityWikiPage(queryText));
     }
     function getWeatherChartData(weatherData){
         const min = [];const max = [];const day = [];
         weatherData.forEach( (entry) => {
-            min.push(convertKelvinToUnit('celcius',entry.temp.min));
-            max.push(convertKelvinToUnit('celcius',entry.temp.max));
-            day.push(convertKelvinToUnit('celcius',entry.temp.day));
+            min.push(convertKelvinToUnit(temperatureUnit,entry.temp.min));
+            max.push(convertKelvinToUnit(temperatureUnit,entry.temp.max));
+            day.push(convertKelvinToUnit(temperatureUnit,entry.temp.day));
         });
         return {"minTemp": min, "maxTemp": max, "dayTemp": day};
     }
@@ -210,22 +222,25 @@ document.addEventListener("DOMContentLoaded", async () => {
         return weatherData;
     }
     // Temperature unit change logic
-    function tempString (kelvinTemp) {
-        const radio = document.querySelector("#fahrenheit");
-        let tempString = ""  
-        radio.checked ? tempString = `${convertKelvinToUnit('fahrenheit', kelvinTemp)}°F` : `${convertKelvinToUnit('celcius', kelvinTemp)}°C}`; // There are only two possible states for the radio buttons, so this is an easy way to apply the logic.
-        return tempString;
+    function tempString () {
+        let temperatureString = "";
+        temperatureUnit === 'celcius' ? temperatureString = '°C' : temperatureString = '°F';
+        return temperatureString;
     }
+    
     /* Generates the markup for the weather data we want to display */
     function makeRelevantWeatherDataMarkup(weatherObj){ 
-        console.log(weatherObj);
+        const weatherStrings = ["The humidity at this location is " + weatherObj.current.humidity + "%", 
+                            "The forecast is " + weatherObj.current.weather[0].description, "Wind speed: " + weatherObj.current.wind_speed + "km/h", 
+                            `Currently ${convertKelvinToUnit(temperatureUnit, weatherObj.current.temp), tempString()}`, `Feels like ${convertKelvinToUnit(temperatureUnit, weatherObj.current.feels_like), tempString()}`, `Visibility up to ${Math.round(weatherObj.current.visibility / 1000, 1)}km`, `Atmospheric pressure is ${weatherObj.current.pressure } hPa`];
+
         document.querySelector(".humidity").textContent = "The humidity at this location is " + weatherObj.current.humidity + "%";
         document.querySelector(".weather-description").textContent = "The forecast is " + weatherObj.current.weather[0].description;
         document.querySelector(".wind-speed").textContent = "Wind speed: " + weatherObj.current.wind_speed + "km/h";
-        document.querySelector("#currentTemp").textContent = `Currently ${convertKelvinToUnit('fahrenheit', weatherObj.current.temp)}°F / ${convertKelvinToUnit('celcius', weatherObj.current.temp)}°C`
+        document.querySelector("#currentTemp").textContent = `Currently ${convertKelvinToUnit(temperatureUnit, weatherObj.current.temp), tempString()}` ;
         document.querySelector(".pressure").textContent = `Atmospheric pressure is ${weatherObj.current.pressure } hPa`
         document.querySelector(".visibility").textContent = `Visibility up to ${Math.round(weatherObj.current.visibility / 1000, 1)}km`;
-        document.querySelector("#feelsTemp").textContent = `Feels like ${convertKelvinToUnit('fahrenheit', weatherObj.current.feels_like)}°F / ${convertKelvinToUnit('celcius', weatherObj.current.feels_like)}°C`;
+        document.querySelector("#feelsTemp").textContent = `Feels like ${convertKelvinToUnit(temperatureUnit, weatherObj.current.feels_like), tempString()}`;
         // Change the image being used for the temperature dependent on the value at the given city.
         const tempImg = document.querySelector("#thermo");
         convertKelvinToUnit('celcius', weatherObj.current.temp) < 0 ? tempImg.src = "./images/weather-assets/cold.png" : tempImg.src = "./images/weather-assets/hot.png";
@@ -236,7 +251,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         const currentTime = new Date(new Date().toLocaleString("en-US", {timeZone: weatherObj.current.timezone})).getTime();
         const sunsetTime = weatherObj.current.sunset * 1000;
         const sunriseTime = weatherObj.current.sunrise * 1000;
-        console.log(currentTime, sunsetTime, sunriseTime);
         const timeImg = document.querySelector("#time-image");
         currentTime >= sunriseTime && currentTime < sunsetTime ? timeImg.src = "./images/weather-assets/sun.png" : timeImg.src = "./images/weather-assets/moon.png";
     }
@@ -451,9 +465,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
         return week;
     }
-    function wikipediaEdgeCaseQueries(userQuery){
 
-    }
-    // Map containing 
-    const searchMap = new Map([ ["Portland", "Portland Oregon"], ["New York", "New York City"], ["Anchorage, United States", "Anchorage, Alaska"], ["London, Canada", "London, Ontario"]])
+
 });
