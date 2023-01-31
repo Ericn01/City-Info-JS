@@ -16,7 +16,7 @@ const countryEmojis = new Map([ ["United Arab Emirates","🇦🇪"],["Afghanista
 
 document.addEventListener("DOMContentLoaded", async () => {
     // Select random background image 
-    const NUM_BG_IMAGES = 5; // This is hardcoded for now, and will be changed later on -> bash script could retrieve the count from directory and hand it as a variable
+    const NUM_BG_IMAGES = 6; // This is hardcoded for now, and will be changed later on -> bash script could retrieve the count from directory and hand it as a variable
     const imageIndex = Math.ceil(Math.random() * NUM_BG_IMAGES);
     document.querySelector("body").style.backgroundImage = `url('./images/background-images/bg${imageIndex}.jpg')`;
     // Query Selectors for some of the data elements 
@@ -129,7 +129,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
     // Map containing edge cases
     const searchMap = new Map([ ["Portland, United States", "Portland, Oregon"], ["New York, United States", "New York City"], ["Anchorage, United States", "Anchorage, Alaska"], ["London, Canada", "London, Ontario"], ["Guelph, Canada", "Guelph, Ontario"], ["Montréal, Canada", "Montreal"], ["Quebec City, Canada", "Quebec City"], 
-["Birmingham, United States", "Birmingham, Alabama"], ["Ellore, India", "Eluru"]])
+["Birmingham, United States", "Birmingham, Alabama"], ["Ellore, India", "Eluru"], ["An Najaf, Iraq", "Najaf"]])
     async function performWikiDataLogic(inputCity){
         let unrefinedQuery = ""
         inputCity.population > 750000 ? unrefinedQuery = inputCity.city : unrefinedQuery = `${inputCity.city}, ${inputCity.country}`; // Large cities tend to work better when you only call their name, and not their country using the wikipedia API
@@ -152,10 +152,11 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
         return {"minTemp": min, "maxTemp": max, "dayTemp": day};
     }
-
+    /* Displays the city name, country, flag, sunrise and sunset time, along with it's metro population. */
     function displayMainCityInfo(name, country, population, weatherObj){
-        const sunriseTime = new Date(weatherObj.current.sunrise * 1000);
-        const sunsetTime = new Date(weatherObj.current.sunset * 1000);
+        // The sunrise and sunset times must take into account the city's timezone, therefore a conversion is required.
+        const sunriseTime = new Date(new Date(weatherObj.current.sunrise * 1000).toLocaleString("en-us", {timeZone: weatherObj.timezone}));
+        const sunsetTime = new Date(new Date(weatherObj.current.sunset * 1000).toLocaleString("en-us", {timeZone: weatherObj.timezone}));
         const sunsetSunriseOptions = {hour:"numeric", minute:"numeric",second:"numeric"};
         cityNameCountryContainer.textContent = name + ", " + country + " " + getCountryEmoji(country);
         cityPopulationContainer.textContent = `The ${name} metro area has a population of approximately ` + formatPopulationValue(population) + " people";
@@ -222,7 +223,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         return weatherData;
     }
     // Temperature unit change logic
-    function tempString () {
+    function tempString (temperatureUnit) {
         let temperatureString = "";
         temperatureUnit === 'celcius' ? temperatureString = '°C' : temperatureString = '°F';
         return temperatureString;
@@ -237,10 +238,10 @@ document.addEventListener("DOMContentLoaded", async () => {
         document.querySelector(".humidity").textContent = "The humidity at this location is " + weatherObj.current.humidity + "%";
         document.querySelector(".weather-description").textContent = "The forecast is " + weatherObj.current.weather[0].description;
         document.querySelector(".wind-speed").textContent = "Wind speed: " + weatherObj.current.wind_speed + "km/h";
-        document.querySelector("#currentTemp").textContent = `Currently ${convertKelvinToUnit(temperatureUnit, weatherObj.current.temp), tempString()}` ;
+        document.querySelector("#currentTempValue").textContent = `${convertKelvinToUnit('celcius', weatherObj.current.temp)} ${tempString('celcius')}`;
         document.querySelector(".pressure").textContent = `Atmospheric pressure is ${weatherObj.current.pressure } hPa`
         document.querySelector(".visibility").textContent = `Visibility up to ${Math.round(weatherObj.current.visibility / 1000, 1)}km`;
-        document.querySelector("#feelsTemp").textContent = `Feels like ${convertKelvinToUnit(temperatureUnit, weatherObj.current.feels_like), tempString()}`;
+        document.querySelector("#feelsLikeValue").textContent = `${convertKelvinToUnit('celcius', weatherObj.current.feels_like)} ${tempString('celcius')}`;
         // Change the image being used for the temperature dependent on the value at the given city.
         const tempImg = document.querySelector("#thermo");
         convertKelvinToUnit('celcius', weatherObj.current.temp) < 0 ? tempImg.src = "./images/weather-assets/cold.png" : tempImg.src = "./images/weather-assets/hot.png";
