@@ -1,12 +1,11 @@
 @import url('https://fonts.googleapis.com/css2?family=Lora&display=swap');
 body{
-    margin: 2rem 12rem;
     background-size: stretch;
     background-repeat: no-repeat;
     background-color: whitesmoke;
     font-family: 'Lora', serif;
-    color: white;
-    text-shadow: 1px 1px 2px rgba(0,0,0, 0.3);
+    color: black;
+    height: 100vh;
 }
 h1{
     font-size: 3.35rem;
@@ -18,7 +17,19 @@ h3{
     font-size: 1.2rem;
     font-weight: normal;
 }
+header{
+    display: flex;
+    align-items: center;
+    height: min-content
+}
+.city-input-view, .city-search-view{
+    margin: 2rem 12rem;
+}
 .city-input-view{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     text-align: center;
     height: 100%;
     margin: 18.5% auto;
@@ -69,10 +80,12 @@ button{
     border: 1px solid black;
     width: 125px;
     min-width: 50px;
+    text-shadow: 1px 1px black;
     color: white;
 }
 button:hover{
-    box-shadow: 2px 2px 10px black;
+    transition: 1s ease;
+    box-shadow: 2px 2px 10px rgba(0,0,0,0.25);
     background-color: coral;
     cursor: pointer;
 }
