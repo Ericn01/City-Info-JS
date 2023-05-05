@@ -22,20 +22,8 @@ function cityNotFoundError(cityName){
     const cityNotFound = document.querySelector(".city-not-found");
     cityNotFound.innerHTML = ""; // Resets any error that was there previously 
     cityNotFound.textContent = `The city '${cityName}' could not be found. Please check your spelling, and try again.`
-    cityInput.textContent = "";
+    document.querySelector('#city-input').value = "";
 }    
 
-// Loader (gif) logic
-function loadAnimationLogic (state, cityInputBtn){
-    const animationImg = document.querySelector(".loading-img");
-    animationImg.setAttribute("src", "./images/loading.gif");
-    if (state === "active"){
-        cityInputBtn.style.display = "none";
-        animationImg.style.display = 'inline';
-    } else if (state === 'inactive'){
-        cityInputBtn.style.display = "inline";
-        animationImg.style.display = "inline";
-    }
-}
 
-export {getSpecifiedCity, cityNotFoundError, loadAnimationLogic};
+export {getSpecifiedCity, cityNotFoundError};

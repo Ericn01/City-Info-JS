@@ -1,7 +1,7 @@
 
 import cityInfoDisplay from './scripts/cityDisplay.js'
-import { findMatches, fetchEndpointData } from "./scripts/miscellaneous.js";
-import { getSpecifiedCity, cityNotFoundError, loadAnimationLogic } from "./scripts/locateCity.js"
+import { findMatches, fetchEndpointData, changeView, loadAnimationLogic } from "./scripts/miscellaneous.js";
+import { getSpecifiedCity, cityNotFoundError } from "./scripts/locateCity.js"
 /*
 * The idea for this project is to display convenient and relevant weather info about a given city (25,000+ inhabitants for this website),
 * along with practicing API calls. I'm using the Google Maps API to retrieve a description of the given city
@@ -27,13 +27,16 @@ async function loadCityData(){
 document.addEventListener("DOMContentLoaded", async () => {
     // Load the city data into a variable
     const cityData = await loadCityData();
-    
+    changeView("search");
     // Number of cities in the body
     const NUM_CITIES = cityData.length;
     
     // Button event listeners
     const cityInputBtn = document.querySelector("#city-submit-btn");
     cityInputBtn.addEventListener("click", handleCityInput);
+    // Switch the view back to city search
+    const switchViewBtn = document.querySelector("#switch-view-btn");
+    switchViewBtn.addEventListener('click', () => changeView("search"));
     // Retrieve city data -> retrieve weather data
     const cityInput = document.querySelector("#city-input");
     cityInput.addEventListener("input", autocompleteCityInput)
@@ -72,7 +75,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
         else{
             // City could not be found, display an error message
-            cityNotFoundError(userCityInput)
+            cityNotFoundError(userCityInput);
         }
     }
 

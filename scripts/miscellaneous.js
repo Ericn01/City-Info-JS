@@ -7,7 +7,8 @@ function changeView(newView){
     const cityInfoView = document.querySelector(".city-info-view");
     if (newView === 'search'){
         cityInputView.style.display = 'block';
-        cityInfoView.classList.toggle("city-info-view");            
+        cityInfoView.style.display = 'none';  
+        loadAnimationLogic('inactive', document.querySelector("#city-submit-btn"));
     }
     else if (newView === 'city-info'){
         cityInputView.style.display = 'none';
@@ -58,4 +59,17 @@ async function fetchEndpointData(endpoint){
     return JSONData;
 }
 
-export {convertKelvinToUnit, calculateTimeAtLocation, changeView, findMatches, fetchEndpointData};
+// Loader (gif) logic
+function loadAnimationLogic (state, cityInputBtn){
+    const animationImg = document.querySelector(".loading-img");
+    animationImg.setAttribute("src", "./images/loading.gif");
+    if (state === "active"){
+        cityInputBtn.style.display = "none";
+        animationImg.style.display = 'inline';
+    } else if (state === 'inactive'){
+        cityInputBtn.style.display = "inline";
+        animationImg.style.display = "inline";
+    }
+}
+
+export {convertKelvinToUnit, calculateTimeAtLocation, changeView, findMatches, fetchEndpointData, loadAnimationLogic};

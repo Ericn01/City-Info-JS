@@ -10,14 +10,21 @@ async function getCityWikiPage(cityCountryPair){
 // Given a string,  
 async function parseWikiData(wikiData){
     const pageData = await wikiData;
-    if (!pageData['parse']['text']['*'].includes("NewPP limit report") || pageData !== undefined){
-        const pageHTMLText = pageData['parse']['text']['*'];
-        const parserObject = new DOMParser();
-        const paragraphAttribute = parserObject.parseFromString(pageHTMLText, 'text/html').querySelectorAll("p")[1].textContent ?? 'Sorry, we were unable to retrieve a description of the inputted city...';
-        return paragraphAttribute.replace(/\[\w+\]/gm, '');
+    console.log(wikiData);
+    if (pageData['parse'] != ""){
+        if (!pageData['parse']['text']['*'].includes("NewPP limit report")) {
+            const pageHTMLText = pageData['parse']['text']['*'];
+            const parserObject = new DOMParser();
+            const parsedText = parserObject.parseFromString(pageHTMLText, 'text/html').querySelectorAll("p")[1].textContent;
+            let paragraphAttribute = "No information could be retrieved from Wikipedia for this city... Sorry!";
+            if (parsedText != ""){
+                paragraphAttribute = parsedText;
+            }
+            return paragraphAttribute.replace(/\[\w+\]/gm, '');
+        }
     }
     else {
-        console.log("The result of that page search was undefined...");
+        console.log("The specified page does not exist...");
     }
 }
 // Change the way that the data is queried from wikipedia, depending on the population of the given city
@@ -30,7 +37,6 @@ async function performWikiDataLogic(inputCity){
     let queryText = ""
     // Logic for different types of searches
     queryText = searchMap.get(unrefinedQuery) ?? unrefinedQuery;
-    console.log(queryText);
     // let the text content be what we retrieved.
     wikiContainer.textContent = await parseWikiData(getCityWikiPage(queryText));
 }

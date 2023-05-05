@@ -22,7 +22,7 @@ header{
     align-items: center;
     height: min-content
 }
-.city-input-view, .city-search-view{
+.city-info-view, .city-search-view{
     margin: 2rem 12rem;
 }
 .city-input-view{
@@ -98,7 +98,6 @@ button:hover{
     margin-left: 15px;
 }
 .city-info-view{
-    display: none;
     border-radius: 20px;
     column-gap: 15px;
     row-gap: 30px;
@@ -233,7 +232,7 @@ button:hover{
     }
 }
 
-@media only screen and (max-width: 450px){
+@media only screen and (max-width: 500px){
     body{
         background-image: none;
         padding: 0px;
@@ -250,11 +249,11 @@ button:hover{
     .city-info-view div{
         padding: 3px 20px;
     }
-    h2{
+    #subtitle{
         font-size: 1.2rem;
     }
     h3, .weather-info div{
-        font-size: 1rem;
+        font-size: 0.9rem;
     }
     .city-description{
         margin-left: 0px;

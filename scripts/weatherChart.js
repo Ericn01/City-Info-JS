@@ -3,6 +3,10 @@
 // This function uses the Chart.JS libary to generate a week forecast at the given location.
 function makeWeatherChart(minData, maxData, dayData){
     const context = document.querySelector("#weather-chart").getContext('2d');
+    let chartStatus = Chart.getChart('weather-chart');
+    if (chartStatus){
+        chartStatus.destroy();
+    }
     const labels = formatChartWeekdays(); // Returns an array of days in the format: M D
     const chartOptions = {
         scales : {
@@ -52,6 +56,7 @@ function makeWeatherChart(minData, maxData, dayData){
     const chartConfig = {type: 'line', data:data, options: chartOptions};
     new Chart(context, chartConfig); // create and display the chart
 }
+
 
 // Formats the weekdays (x axis) of the weather chart
 function formatChartWeekdays(){

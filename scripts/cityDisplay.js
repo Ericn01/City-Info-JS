@@ -9,9 +9,9 @@ import { convertKelvinToUnit, calculateTimeAtLocation, changeView } from "./misc
 const cityNameCountryContainer = document.querySelector(".name-country");
 const cityPopulationContainer = document.querySelector(".population");
 let temperatureUnit = 'celcius';
+console.log
 // Displays all the required information for the given city
 async function cityInfoDisplay(inputCity){
-    console.log(inputCity);
     // Latitude and longitude coordinates retrieved from the city obj
     const lat = inputCity.lat;
     const long = inputCity.lng;
