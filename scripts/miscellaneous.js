@@ -1,17 +1,19 @@
 // This script contains all functions that are considered miscellaneous / not required for the website to work properly 
 
-
 // Switches the view of the application on click
 function changeView(newView){
     const cityInputView = document.querySelector(".city-input-view");
     const cityInfoView = document.querySelector(".city-info-view");
+    const switchViewBtn = document.querySelector('#switch-view-btn');
     if (newView === 'search'){
+        switchViewBtn.style.display = 'none';
         cityInputView.style.display = 'block';
         cityInfoView.style.display = 'none';  
-        loadAnimationLogic('inactive', document.querySelector("#city-submit-btn"));
+        loadAnimationLogic('inactive');
     }
     else if (newView === 'city-info'){
         cityInputView.style.display = 'none';
+        switchViewBtn.style.display = 'inline';
         if (window.innerWidth < 500){
             cityInfoView.style.display = 'block';
         }else {
@@ -60,15 +62,18 @@ async function fetchEndpointData(endpoint){
 }
 
 // Loader (gif) logic
-function loadAnimationLogic (state, cityInputBtn){
+function loadAnimationLogic (state){
+    console.log(state);
     const animationImg = document.querySelector(".loading-img");
+    const cityInputBtn = document.querySelector("#city-submit-btn");
     animationImg.setAttribute("src", "./images/loading.gif");
+    
     if (state === "active"){
         cityInputBtn.style.display = "none";
         animationImg.style.display = 'inline';
     } else if (state === 'inactive'){
         cityInputBtn.style.display = "inline";
-        animationImg.style.display = "inline";
+        animationImg.style.display = "none";
     }
 }
 

@@ -58,7 +58,7 @@ function setTimeImage(weatherObj){
                                                     textShadow: '1px 1px 2px rgba(0,0,0, 0.25)',
                                                     textColor: 'black'});
     } else{
-        setTimeImageHTML(timeImg, contentContainer, {imgPath: "./images/weather-assets/moon.png",
+        setTimeImageHTML(timeImg, contentContainer, {imgPath: "./images/weather-assets/moonalt.png",
                                                     gradient: 'linear-gradient(#2C5364, #203A43, #0F2027)',
                                                     textShadow: '1px 1px 2px rgba(0,0,0, 0.25)',
                                                     textColor: 'white'});

@@ -9,7 +9,7 @@ import { convertKelvinToUnit, calculateTimeAtLocation, changeView } from "./misc
 const cityNameCountryContainer = document.querySelector(".name-country");
 const cityPopulationContainer = document.querySelector(".population");
 let temperatureUnit = 'celcius';
-console.log
+
 // Displays all the required information for the given city
 async function cityInfoDisplay(inputCity){
     // Latitude and longitude coordinates retrieved from the city obj
@@ -21,6 +21,7 @@ async function cityInfoDisplay(inputCity){
     // Receive and return the weather data for the given city
     const weatherData = await retrieveCityWeatherData(lat, long).then(res => res);
     makeRelevantWeatherDataMarkup(weatherData);
+    
     // grab the time at the given location and display it 
     setInterval( () => displayTimeInformation(weatherData.timezone), 1000); // Increments the current time by one second 
     // Displays the city basic information 
@@ -52,6 +53,7 @@ function displayMainCityInfo(name, country, population, weatherObj){
 
 /* Displays the time information for the specified timezone*/
 function displayTimeInformation(timezone){
+    console.log(timezone);
     // Data point
     const dateData = calculateTimeAtLocation(timezone).split("at");
     // Strings to be displayed

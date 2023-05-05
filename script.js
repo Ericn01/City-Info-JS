@@ -27,10 +27,10 @@ async function loadCityData(){
 document.addEventListener("DOMContentLoaded", async () => {
     // Load the city data into a variable
     const cityData = await loadCityData();
-    changeView("search");
     // Number of cities in the body
-    const NUM_CITIES = cityData.length;
-    
+    const NUM_CITIES = cityData.length;   
+    // Set the default view
+    changeView('search');
     // Button event listeners
     const cityInputBtn = document.querySelector("#city-submit-btn");
     cityInputBtn.addEventListener("click", handleCityInput);
@@ -43,12 +43,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // This object contains location data in the form of city, country to locate a specific entry
     const cityCountryObj = cityData.map((entry) => {return {"location": `${entry.city}, ${entry.country}`}});
-
-    // Define a function that loads a placeholder for the city text input
-    function loadCityInputPlaceholder(){
-        const citySeed = Math.floor(Math.random() * NUM_CITIES);
-        cityInput.placeholder = `${cityData[citySeed].city}, ${cityData[citySeed].country}`; // Random placeholder for a city 
-    }
 
     /* Autocompletes the title options after the user types in a certain amount of characters*/
     function autocompleteCityInput(){
@@ -70,7 +64,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         // Retrieves the city Object that the user was looking for
         const inputCity = getSpecifiedCity(userCityInput, cityData);
         if (inputCity != ""){ // The input is not null, or undefined, etc.
-            loadAnimationLogic("active", cityInputBtn); 
+            loadAnimationLogic("active"); 
             cityInfoDisplay(inputCity);
         }
         else{
@@ -78,9 +72,13 @@ document.addEventListener("DOMContentLoaded", async () => {
             cityNotFoundError(userCityInput);
         }
     }
-
-    // Call the function 
-    loadCityInputPlaceholder();   
+    // Define a function that loads a placeholder for the city text input
+    function loadCityInputPlaceholder(){
+        const citySeed = Math.floor(Math.random() * NUM_CITIES);
+        cityInput.placeholder = `${cityData[citySeed].city}, ${cityData[citySeed].country}`; // Random placeholder for a city 
+    }
+    // Load a random placeholder value
+    loadCityInputPlaceholder();  
 
     // Listens for screen/window resizes
     addEventListener("resize", () => {

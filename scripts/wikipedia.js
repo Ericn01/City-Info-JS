@@ -11,20 +11,18 @@ async function getCityWikiPage(cityCountryPair){
 async function parseWikiData(wikiData){
     const pageData = await wikiData;
     console.log(wikiData);
-    if (pageData['parse'] != ""){
-        if (!pageData['parse']['text']['*'].includes("NewPP limit report")) {
-            const pageHTMLText = pageData['parse']['text']['*'];
-            const parserObject = new DOMParser();
-            const parsedText = parserObject.parseFromString(pageHTMLText, 'text/html').querySelectorAll("p")[1].textContent;
-            let paragraphAttribute = "No information could be retrieved from Wikipedia for this city... Sorry!";
-            if (parsedText != ""){
-                paragraphAttribute = parsedText;
-            }
-            return paragraphAttribute.replace(/\[\w+\]/gm, '');
+    if (!pageData['parse']['text']['*'].includes("NewPP limit report") || pageData !== undefined) {
+        const pageHTMLText = pageData['parse']['text']['*'];
+        const parserObject = new DOMParser();
+        const parsedText = parserObject.parseFromString(pageHTMLText, 'text/html').querySelectorAll("p")[1].textContent;
+        let paragraphAttribute = "No information could be retrieved from Wikipedia for this city... Sorry!";
+        if (parsedText != ""){
+            paragraphAttribute = parsedText;
         }
+        return paragraphAttribute.replace(/\[\w+\]/gm, '');
     }
     else {
-        console.log("The specified page does not exist...");
+        return "No information from Wikipedia could be retrieved for this page...";
     }
 }
 // Change the way that the data is queried from wikipedia, depending on the population of the given city
